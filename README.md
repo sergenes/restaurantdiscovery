@@ -1,6 +1,6 @@
 # Lunchtime Restaurant Discovery
 
-Mobile Engineer Applicant Homework Lunchtime Restaurant Discovery
+Lunchtime Restaurant Discovery: An Android App That Demonstrates Best Practices
 
 ## Brief Project Description
 
