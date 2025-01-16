@@ -97,7 +97,7 @@ placeholder - please replace it with the actual API key value before you build t
   </tr>
  </table>
 
-## Documentation
+## References to Documentation for Libraries and APIs Used
 
 - Google Places API
     - [Nearby-Search](https://developers.google.com/maps/documentation/places/web-service/nearby-search)
