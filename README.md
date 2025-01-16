@@ -10,14 +10,14 @@ implemented as a Kotlin Jetpack Compose project.
 
 ## Original SPEC (Required Features)
 
-The app will use the Google Places API as its data source.
-The app will prompt the user for permission to access their current location.
-Upon launch, the app will execute a search and display nearby restaurants.
-A search feature will allow the user to search for specific restaurants.
-Users can choose to display search results as a list or as pins on a map.
-Selecting a search result will display basic information about the restaurant.
-Third-party libraries may be used at the developer's discretion, but the Google Places API client must not be used.
-Users can flag restaurants as favorites, with favorite status reflected in current and future search results.
+- The app will use the Google Places API as its data source.
+- The app will prompt the user for permission to access their current location.
+- Upon launch, the app will execute a search and display nearby restaurants.
+- A search feature will allow the user to search for specific restaurants.
+- Users can choose to display search results as a list or as pins on a map.
+- Selecting a search result will display basic information about the restaurant.
+- Third-party libraries may be used at the developer's discretion, but the Google Places API client must not be used.
+- Users can flag restaurants as favorites, with favorite status reflected in current and future search results.
 
 
 ## Build Instruction
@@ -124,18 +124,18 @@ Selecting a restaurant brings up basic details like name, address, and ratings. 
 
 I followed Clean Architecture principles, splitting the app into three layers:
 
-Data Layer using the Repository Pattern for clean data handling.
-Domain Layer, where all the business logic lives in reusable use cases.
-Presentation Layer, built with Jetpack Compose and MVVM, which keeps the UI reactive and maintainable.
-For state management, I used StateFlow with a unidirectional data flow, which simplifies updates and keeps things predictable. Errors are managed using a Result wrapper, and sealed classes help define clear UI states.
+- Data Layer using the Repository Pattern for clean data handling.
+- Domain Layer, where all the business logic lives in reusable use cases.
+- Presentation Layer, built with Jetpack Compose and MVVM, which keeps the UI reactive and maintainable.
+- For state management, I used StateFlow with a unidirectional data flow, which simplifies updates and keeps things predictable. Errors are managed using a Result wrapper, and sealed classes help define clear UI states.
 
 On the tech stack side, I used:
 
-Ktor Client for networking—lightweight, flexible, and coroutine-friendly.
-Coil for image loading—optimized for Compose with caching baked in.
-DataStore for simple favorites persistence.
-Hilt for dependency injection.
-And FusedLocationProvider for battery-efficient location tracking.
+- Ktor Client for networking—lightweight, flexible, and coroutine-friendly.
+- Coil for image loading—optimized for Compose with caching baked in.
+- DataStore for simple favorites persistence.
+- Hilt for dependency injection.
+- And FusedLocationProvider for battery-efficient location tracking.
 
 Testing was also a focus. I wrote unit tests with JUnit4 and mocked dependencies with MockK, using coroutine testing tools for asynchronous workflows.
 
