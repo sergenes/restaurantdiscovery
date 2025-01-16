@@ -10,8 +10,6 @@ implemented as a Kotlin Jetpack Compose project.
 
 ## Build Instruction
 
-## Project Setup
-
 For security best practices, sensitive information such as the Google Places API key is stored in
 `gradle.properties` and excluded from GitHub. The file is included in the repository with a
 placeholder - please replace it with the actual API key value before you build the project.
@@ -102,3 +100,7 @@ placeholder - please replace it with the actual API key value before you build t
     - [ViewModel/Repository/Coroutines](https://developer.android.com/kotlin/coroutines/coroutines-best-practices)
     - [Flow](https://developer.android.com/kotlin/flow)
     - [runCatching](https://dev.to/1noshishi/mastering-runcatching-in-kotlin-how-to-avoid-coroutine-cancellation-issues-5go2)
+
+## Contact
+
+Connect and follow me on LinkedIn: [Sergey N](https://www.linkedin.com/in/sergey-neskoromny/)
