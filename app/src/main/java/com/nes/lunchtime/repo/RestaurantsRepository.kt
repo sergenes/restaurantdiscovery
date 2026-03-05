@@ -5,6 +5,7 @@ import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.net.GooglePlacesClient
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 
 interface RestaurantsRepository {
@@ -30,36 +31,36 @@ class RestaurantsRepositoryImpl @Inject constructor(
     override suspend fun getNearByRestaurants(
         location: LatLng,
         radius: Int
-    ): Result<List<Restaurant>> {
-        return runCatching {
-            client.getNearbyRestaurants(location.latitude, location.longitude, radius = radius)
-        }.onFailure { error ->
-            Log.e("RestaurantsRepository", "Error fetching nearby restaurants", error)
-        }
+    ): Result<List<Restaurant>> = safeApiCall("Error fetching nearby restaurants") {
+        client.getNearbyRestaurants(location.latitude, location.longitude, radius = radius)
     }
 
-    override suspend fun getPlaceDetails(id: String): Result<PlaceDetails> {
-        return runCatching {
+    override suspend fun getPlaceDetails(id: String): Result<PlaceDetails> =
+        safeApiCall("Error fetching place details") {
             client.getPlaceDetails(id)
-        }.onFailure { error ->
-            Log.e("RestaurantsRepository", "Error fetching place details", error)
         }
-    }
 
     override suspend fun getRestaurantsByText(
         searchText: String,
         location: LatLng,
         radius: Int
-    ): Result<List<Restaurant>> {
-        return runCatching {
-            client.getRestaurantsByText(
-                searchText,
-                location.latitude,
-                location.longitude,
-                radius = radius
-            )
-        }.onFailure { error ->
-            Log.e("RestaurantsRepository", "Error fetching restaurants by text", error)
+    ): Result<List<Restaurant>> = safeApiCall("Error fetching restaurants by text") {
+        client.getRestaurantsByText(
+            searchText,
+            location.latitude,
+            location.longitude,
+            radius = radius
+        )
+    }
+
+    private suspend fun <T> safeApiCall(errorMessage: String, call: suspend () -> T): Result<T> {
+        return try {
+            Result.success(call())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e("RestaurantsRepository", errorMessage, e)
+            Result.failure(e)
         }
     }
 }
