@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
@@ -10,27 +11,38 @@ plugins {
     alias(libs.plugins.hiltAndroid)
 }
 
+// Load local.properties manually
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+val googleApiKey: String = localProperties.getProperty("google.places.api.key") ?: ""
+println("DEBUG: googleApiKey is: $googleApiKey")
+
 android {
     namespace = "com.nes.lunchtime"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.nes.lunchtime"
         minSdk = 24
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Add the manifest placeholder here so it's available for all build types
+        manifestPlaceholders["googleApiKey"] = googleApiKey
     }
 
     buildTypes {
         debug {
-            buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"${project.findProperty("google.places.api.key")}\"")
-            manifestPlaceholders["googleApiKey"] = "${project.findProperty("google.places.api.key")}"
+            buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"$googleApiKey\"")
         }
         release {
-            buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"${project.findProperty("google.places.api.key")}\"")
-            manifestPlaceholders["googleApiKey"] = "${project.findProperty("google.places.api.key")}"
+            buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"$googleApiKey\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
