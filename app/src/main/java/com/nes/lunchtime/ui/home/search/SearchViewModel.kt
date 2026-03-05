@@ -1,10 +1,10 @@
 package com.nes.lunchtime.ui.home.search
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.nes.lunchtime.domain.GetRestaurantsUseCase
 import com.nes.lunchtime.domain.Restaurant
+import com.nes.lunchtime.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,13 +14,16 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the search screen with debouncing support.
+ * Extends BaseViewModel to utilize common loading and error handling patterns.
+ */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getRestaurantsUseCase: GetRestaurantsUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
     sealed class UiState {
         data object Initial : UiState()
@@ -80,20 +83,18 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Searches for restaurants by text and location.
+     * Uses the BaseViewModel's executeWithLoading to handle loading states and errors consistently.
+     */
     private fun searchRestaurants(searchText: String, location: LatLng) {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            val result = getRestaurantsUseCase.search(searchText, location)
-            
-            _uiState.value = result.fold(
-                onSuccess = { restaurants ->
-                    UiState.Success(restaurants)
-                },
-                onFailure = { exception ->
-                    UiState.Error(exception.localizedMessage ?: "Unknown error occurred")
-                }
-            )
-        }
+        executeWithLoading(
+            uiState = _uiState,
+            loadingState = UiState.Loading,
+            block = { getRestaurantsUseCase.search(searchText, location) },
+            onSuccess = { restaurants -> UiState.Success(restaurants) },
+            onError = { message -> UiState.Error(message) }
+        )
     }
 
     fun clearSearch() {

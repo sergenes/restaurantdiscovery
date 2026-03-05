@@ -1,22 +1,22 @@
 package com.nes.lunchtime.ui.details
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.repo.RestaurantsRepository
+import com.nes.lunchtime.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.CancellationException
 
-
+/**
+ * ViewModel for the restaurant details screen.
+ * Extends BaseViewModel to utilize common loading and error handling patterns.
+ */
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val repo: RestaurantsRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     sealed class UiState {
         data object Initial : UiState()
@@ -39,37 +39,17 @@ class DetailsViewModel @Inject constructor(
         currentRestaurantId?.let { fetchDetails(it) }
     }
 
+    /**
+     * Fetches restaurant details for the given ID.
+     * Uses the BaseViewModel's executeWithLoading to handle loading states and errors consistently.
+     */
     private fun fetchDetails(id: String) {
-        viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-
-                val result = repo.getPlaceDetails(id)
-                _uiState.value = when {
-                    result.isSuccess -> {
-                        val details = result.getOrNull()
-                        if (details != null) {
-                            UiState.Success(details)
-                        } else {
-                            UiState.Error("Restaurant details not found")
-                        }
-                    }
-                    result.isFailure -> {
-                        when (val exception = result.exceptionOrNull()) {
-                            is CancellationException -> throw exception
-                            null -> UiState.Error("Unknown error occurred")
-                            else -> UiState.Error(
-                                exception.localizedMessage ?: "Failed to load details"
-                            )
-                        }
-                    }
-                    else -> UiState.Error("Unknown error occurred")
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error occurred")
-            }
-        }
+        executeWithLoading(
+            uiState = _uiState,
+            loadingState = UiState.Loading,
+            block = { repo.getPlaceDetails(id) },
+            onSuccess = { details -> UiState.Success(details) },
+            onError = { message -> UiState.Error(message) }
+        )
     }
 }
