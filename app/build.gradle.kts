@@ -18,7 +18,7 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 val googleApiKey: String = localProperties.getProperty("google.places.api.key") ?: ""
-println("DEBUG: googleApiKey is: $googleApiKey")
+//println("DEBUG: googleApiKey is: $googleApiKey")
 
 android {
     namespace = "com.nes.lunchtime"
@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.testing)
     testImplementation(libs.junit)
     testImplementation(libs.junit.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -49,25 +49,42 @@ For security best practices, sensitive information such as the Google Places API
 - Target SDK: 36
 
 ## Testing
+
+The project includes comprehensive test coverage focusing on meaningful tests rather than just coverage metrics:
+
+**Unit Tests** (Fast, no device needed):
 ```bash
-./gradlew :app:compileDebugUnitTestKotlin
+./gradlew test
 ```
+- `GetRestaurantsUseCaseTest` - Business logic (distance sorting)
+- `SearchViewModelTest` - Debouncing behavior and search flow
+- `BaseViewModelTest` - Shared loading/error handling utilities
+- `FavoritesViewModelTest` - Toggle favorites logic
+- `DestinationsTest` - Navigation serialization
+
+**Android Instrumentation Tests** (Requires device/emulator):
+```bash
+./gradlew connectedAndroidTest
+```
+- `FavoritesDataSourceTest` - Real DataStore persistence and concurrent operations
 
 ## Architecture & Design Patterns
 
-- Clean Architecture with clear separation of concerns:
+- **Clean Architecture** with clear separation of concerns:
     - Data Layer (Repository Pattern)
     - Domain Layer (Use Cases/Business Logic)
     - Presentation Layer (MVVM with ViewModels)
 
-
-- Type-Safe Navigation: Uses the latest Jetpack Navigation (2.8.0+) with Kotlin Serialization for compile-time safe routing.
-- Single Activity architecture using Jetpack Compose
-- Unidirectional Data Flow using `StateFlow`, and actions are passed up via lambdas.
-- State Management using `sealed` classes for UI states
-- State Encapsulation in ViewModels (`MutableStateFlow` field is always private)
-- Error Handling with `Result`
-- Dependency Injection: Powered by Hilt for modular and testable code.
+- **Type-Safe Navigation**: Uses the latest Jetpack Navigation (2.8.0+) with Kotlin Serialization for compile-time safe routing
+- **Single Activity** architecture using Jetpack Compose
+- **Unidirectional Data Flow** using `StateFlow`, and actions are passed up via lambdas
+- **State Management** using `sealed` classes for UI states
+- **State Encapsulation** in ViewModels (`MutableStateFlow` field is always private)
+- **Error Handling** with `Result` and centralized error state management
+- **Dependency Injection**: Powered by Hilt for modular and testable code
+- **BaseViewModel Pattern**: Eliminates code duplication with shared `executeWithLoading` helper for consistent loading/error handling
+- **Centralized Design System**: `Dimens.kt` for consistent spacing and eliminating magic numbers
+- **Search Debouncing**: 500ms debounce to reduce API calls while user types
 
 
 
@@ -193,11 +210,9 @@ On the tech stack side, I used:
 - Hilt for dependency injection.
 - And FusedLocationProvider for battery-efficient location tracking.
 
+I intentionally kept things simple—no Room database for caching, no offline support—but these would be straightforward to add if needed. The architecture is designed to support these extensions.
 Testing was also a focus. I wrote unit tests with JUnit4 and mocked dependencies with MockK, using coroutine testing tools for asynchronous workflows.
-
-Finally, I went beyond the requirements by adding distance-based sorting for a better user experience and handling errors gracefully. I kept things simple, like skipping local caching with Room DB, but that's an easy extension if needed in the future.
-
-In summary, this app highlights my ability to use modern Android tools and patterns to build a scalable, high-quality app while maintaining simplicity and performance. I'm excited to answer any questions or dive deeper into the code if you're curious.
+In summary, this app demonstrates that I can build production-quality Android apps using modern tools and patterns. It's clean, maintainable, performant, and thoroughly tested. I'm really happy with how it turned out, and I'm excited to answer any questions you might have or dive deeper into any part of the code.
 
 ## Contact
 
