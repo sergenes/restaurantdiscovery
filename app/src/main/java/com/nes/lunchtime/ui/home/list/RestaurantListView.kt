@@ -16,11 +16,18 @@ fun RestaurantsList(
     onItemClicked: (Restaurant) -> Unit,
     onFavoriteClicked: (Restaurant) -> Unit
 ) {
+    // Convert favorites list to set for O(1) lookup performance
+    val favoritesSet = remember(favorites) { favorites.toSet() }
+
     LazyColumn {
-        items(restaurants) { item ->
+        items(
+            items = restaurants,
+            key = { it.id },
+            contentType = { "restaurant" }
+        ) { item ->
             RestaurantCard(
                 restaurant = item,
-                isFavorite = favorites.contains(item.id),
+                isFavorite = favoritesSet.contains(item.id),
                 onItemClicked = onItemClicked,
                 onFavoriteClicked = onFavoriteClicked
             )
