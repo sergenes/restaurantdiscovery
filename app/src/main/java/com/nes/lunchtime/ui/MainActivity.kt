@@ -22,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -78,6 +81,7 @@ class MainActivity : ComponentActivity() {
     ) {
         val locationState by locationViewModel.locationState.collectAsState()
         val navController = rememberNavController()
+        var selectedRestaurant by remember { mutableStateOf<Restaurant?>(null) }
 
         // Handle location state changes
         when (val state = locationState) {
@@ -97,7 +101,6 @@ class MainActivity : ComponentActivity() {
             }
 
             is LocationViewModel.LocationState.LocationAvailable -> {
-                var selectedRestaurant : Restaurant? = null
                 NavHost(navController, startDestination = "home") {
                     composable("home") {
                         HomeScreen(
@@ -151,6 +154,7 @@ class MainActivity : ComponentActivity() {
         message: String,
         onRetry: () -> Unit
     ) {
+        // Simple error screen with retry button
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -178,4 +182,3 @@ class MainActivity : ComponentActivity() {
         this.finish()
     }
 }
-
