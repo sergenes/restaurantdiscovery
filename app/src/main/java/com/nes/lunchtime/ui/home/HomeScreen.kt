@@ -113,15 +113,19 @@ fun HomeScreen(
                             IndeterminateCircularIndicator()
                         }
                         is SearchViewModel.UiState.Success -> {
-                            RestaurantContent(
-                                restaurants = state.restaurants,
-                                favorites = favorites.toList(),
-                                location = location,
-                                onItemClicked = onSelected,
-                                onFavoriteClicked = { restaurant ->
-                                    favoritesViewModel.toggleFavorite(restaurant.id)
-                                }
-                            )
+                            if (state.restaurants.isEmpty()) {
+                                EmptyResultsState("No restaurants found matching your search")
+                            } else {
+                                RestaurantContent(
+                                    restaurants = state.restaurants,
+                                    favorites = favorites.toList(),
+                                    location = location,
+                                    onItemClicked = onSelected,
+                                    onFavoriteClicked = { restaurant ->
+                                        favoritesViewModel.toggleFavorite(restaurant.id)
+                                    }
+                                )
+                            }
                         }
                         is SearchViewModel.UiState.Error -> {
                             ErrorView(
@@ -138,15 +142,19 @@ fun HomeScreen(
                             IndeterminateCircularIndicator()
                         }
                         is NearByViewModel.UiState.Success -> {
-                            RestaurantContent(
-                                restaurants = state.restaurants,
-                                favorites = favorites.toList(),
-                                location = location,
-                                onItemClicked = onSelected,
-                                onFavoriteClicked = { restaurant ->
-                                    favoritesViewModel.toggleFavorite(restaurant.id)
-                                }
-                            )
+                            if (state.restaurants.isEmpty()) {
+                                EmptyResultsState("No restaurants found nearby")
+                            } else {
+                                RestaurantContent(
+                                    restaurants = state.restaurants,
+                                    favorites = favorites.toList(),
+                                    location = location,
+                                    onItemClicked = onSelected,
+                                    onFavoriteClicked = { restaurant ->
+                                        favoritesViewModel.toggleFavorite(restaurant.id)
+                                    }
+                                )
+                            }
                         }
                         is NearByViewModel.UiState.Error -> {
                             ErrorView(
@@ -254,6 +262,20 @@ private fun EmptySearchState() {
     ) {
         Text(
             text = stringResource(R.string.empty_search_prompt),
+            style = typography.bodyLarge,
+            color = colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun EmptyResultsState(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
             style = typography.bodyLarge,
             color = colorScheme.onSurfaceVariant
         )

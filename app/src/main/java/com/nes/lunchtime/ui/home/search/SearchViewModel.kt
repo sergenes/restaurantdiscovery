@@ -53,11 +53,7 @@ class SearchViewModel @Inject constructor(
             
             _uiState.value = result.fold(
                 onSuccess = { restaurants ->
-                    if (restaurants.isEmpty()) {
-                        UiState.Error("No restaurants found matching \'$searchText\'")
-                    } else {
-                        UiState.Success(restaurants)
-                    }
+                    UiState.Success(restaurants)
                 },
                 onFailure = { exception ->
                     UiState.Error(exception.localizedMessage ?: "Unknown error occurred")
