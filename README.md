@@ -42,7 +42,11 @@ For security best practices, sensitive information such as the Google Places API
 
 - Android Studio Ladybug | 2024.2.1 Patch 2
 - Gradle Version: 8.9
+- Android Gradle Plugin: 8.13.2
 - Kotlin: 2.0.0
+- Compile SDK: 36
+- Min SDK: 24
+- Target SDK: 36
 
 ## Architecture & Design Patterns
 

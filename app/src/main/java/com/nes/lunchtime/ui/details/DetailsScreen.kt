@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
@@ -22,8 +23,8 @@ import com.nes.lunchtime.ui.home.ErrorView
 @Composable
 fun DetailsScreen(
     restaurant: Restaurant,
-    viewModel: DetailsViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: DetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

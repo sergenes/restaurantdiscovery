@@ -31,11 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.nes.lunchtime.ui.details.DetailsScreen
-import com.nes.lunchtime.ui.details.DetailsViewModel
 import com.nes.lunchtime.ui.home.HomeScreen
-import com.nes.lunchtime.ui.home.favorites.FavoritesViewModel
-import com.nes.lunchtime.ui.home.nearby.NearByViewModel
-import com.nes.lunchtime.ui.home.search.SearchViewModel
 import com.nes.lunchtime.ui.location.LocationPermissionDeniedDialog
 import com.nes.lunchtime.ui.location.LocationPermissionDialog
 import com.nes.lunchtime.ui.location.LocationViewModel
@@ -48,35 +44,19 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val locationViewModel by viewModels<LocationViewModel>()
-    private val nearByViewModel by viewModels<NearByViewModel>()
-    private val searchViewModel by viewModels<SearchViewModel>()
-    private val detailsViewModel by viewModels<DetailsViewModel>()
-    private val favoritesViewModel by viewModels<FavoritesViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             LunchtimeTheme {
-                MainContent(
-                    locationViewModel = locationViewModel,
-                    nearByViewModel = nearByViewModel,
-                    searchViewModel = searchViewModel,
-                    detailsViewModel = detailsViewModel,
-                    favoritesViewModel = favoritesViewModel
-                )
+                MainContent(locationViewModel = locationViewModel)
             }
         }
     }
 
     @Composable
-    private fun MainContent(
-        locationViewModel: LocationViewModel,
-        nearByViewModel: NearByViewModel,
-        searchViewModel: SearchViewModel,
-        detailsViewModel: DetailsViewModel,
-        favoritesViewModel: FavoritesViewModel
-    ) {
+    private fun MainContent(locationViewModel: LocationViewModel) {
         val locationState by locationViewModel.locationState.collectAsState()
         val navController = rememberNavController()
 
@@ -101,10 +81,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController, startDestination = Home) {
                     composable<Home> {
                         HomeScreen(
-                            viewModel = nearByViewModel,
                             location = state.location,
-                            searchViewModel = searchViewModel,
-                            favoritesViewModel = favoritesViewModel,
                             onSelected = { restaurant ->
                                 navController.navigate(Details.fromRestaurant(restaurant))
                             }
@@ -114,7 +91,6 @@ class MainActivity : ComponentActivity() {
                         val details: Details = backStackEntry.toRoute()
                         DetailsScreen(
                             restaurant = details.toRestaurant(),
-                            viewModel = detailsViewModel,
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }

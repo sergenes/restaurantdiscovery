@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.components.BrandedAppHeader
@@ -64,11 +65,11 @@ sealed class ViewType(
 
 @Composable
 fun HomeScreen(
-    viewModel: NearByViewModel,
     location: LatLng,
-    searchViewModel: SearchViewModel,
-    favoritesViewModel: FavoritesViewModel,
-    onSelected: (Restaurant) -> Unit
+    onSelected: (Restaurant) -> Unit,
+    viewModel: NearByViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val favorites by favoritesViewModel.favorites.collectAsState()
