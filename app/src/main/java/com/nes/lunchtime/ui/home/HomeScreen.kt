@@ -81,6 +81,7 @@ fun HomeScreen(
     // Load nearby restaurants when location changes
     LaunchedEffect(location) {
         viewModel.onLoad(location)
+        searchViewModel.setLocation(location)
     }
 
     Scaffold(
@@ -91,11 +92,11 @@ fun HomeScreen(
                 query = query,
                 onQueryChange = { newQuery ->
                     query = newQuery
-                    if (newQuery.text.isEmpty()) {
-                        searchViewModel.clearSearch()
-                    }
+                    // Trigger debounced search automatically as user types
+                    searchViewModel.onSearchQueryChanged(newQuery.text)
                 },
                 onSearch = {
+                    // Manual search trigger (when user presses search button)
                     searchViewModel.getRestaurantsByText(query.text, location)
                     keyboardController?.hide()
                 }

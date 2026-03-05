@@ -9,6 +9,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,9 +35,38 @@ class SearchViewModel @Inject constructor(
     private data class SearchParams(val query: String, val location: LatLng)
     private var lastSearchParams: SearchParams? = null
 
+    private val _searchQuery = MutableStateFlow("")
+    private var currentLocation: LatLng? = null
+
+    init {
+        // Debounce search queries to avoid excessive API calls
+        _searchQuery
+            .debounce(500) // Wait 500ms after user stops typing
+            .distinctUntilChanged()
+            .filter { it.isNotBlank() }
+            .onEach { query ->
+                currentLocation?.let { location ->
+                    searchRestaurants(query, location)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun setLocation(location: LatLng) {
+        currentLocation = location
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+        if (query.isBlank()) {
+            _uiState.value = UiState.Initial
+            lastSearchParams = null
+        }
+    }
+
     fun getRestaurantsByText(searchText: String, location: LatLng) {
         if (searchText.isBlank()) {
-            _uiState.value = UiState.Success(emptyList())
+            _uiState.value = UiState.Initial
             return
         }
 
