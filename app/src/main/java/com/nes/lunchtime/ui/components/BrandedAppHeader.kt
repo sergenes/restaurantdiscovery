@@ -22,7 +22,7 @@ fun BrandedAppHeader() {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_lockup),
-                    contentDescription = "Logo"
+                    contentDescription = "Lunchtime restaurant discovery app logo"
                 )
             }
         }

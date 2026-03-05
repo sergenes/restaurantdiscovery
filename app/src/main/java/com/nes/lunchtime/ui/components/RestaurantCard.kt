@@ -87,7 +87,7 @@ fun RestaurantCard(
                     val errorResult = result.result
                     println("Error loading image: ${errorResult.throwable}")
                 },
-                contentDescription = null,
+                contentDescription = "Photo of ${restaurant.displayName}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxHeight()
