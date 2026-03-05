@@ -6,6 +6,7 @@ import com.nes.lunchtime.domain.GetRestaurantsUseCase
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
  * ViewModel for the search screen with debouncing support.
  * Extends BaseViewModel to utilize common loading and error handling patterns.
  */
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getRestaurantsUseCase: GetRestaurantsUseCase

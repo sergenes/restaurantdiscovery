@@ -10,15 +10,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.net.model.ReviewDetails
+import com.nes.lunchtime.net.model.ReviewText
 import com.nes.lunchtime.ui.components.IndeterminateCircularIndicator
 import com.nes.lunchtime.ui.home.ErrorView
 import com.nes.lunchtime.ui.theme.Dimens
+import com.nes.lunchtime.ui.theme.LunchtimeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +36,22 @@ fun DetailsScreen(
         viewModel.loadRestaurantDetails(restaurant.id)
     }
 
+    DetailsScreenContent(
+        restaurant = restaurant,
+        uiState = uiState,
+        onNavigateBack = onNavigateBack,
+        onRetry = viewModel::retry
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailsScreenContent(
+    restaurant: Restaurant,
+    uiState: DetailsViewModel.UiState,
+    onNavigateBack: () -> Unit,
+    onRetry: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -73,7 +92,7 @@ fun DetailsScreen(
                 is DetailsViewModel.UiState.Error -> {
                     ErrorView(
                         message = state.message,
-                        onRetry = viewModel::retry
+                        onRetry = onRetry
                     )
                 }
             }
@@ -159,3 +178,68 @@ private fun formatDistance(distanceInMeters: Float) : String {
         else -> String.format("%.1fkm", distanceInMeters / 1000)
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DetailsScreenLoadingPreview() {
+    LunchtimeTheme {
+        DetailsScreenContent(
+            restaurant = sampleRestaurant,
+            uiState = DetailsViewModel.UiState.Loading,
+            onNavigateBack = {},
+            onRetry = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DetailsScreenSuccessPreview() {
+    LunchtimeTheme {
+        DetailsScreenContent(
+            restaurant = sampleRestaurant,
+            uiState = DetailsViewModel.UiState.Success(samplePlaceDetails),
+            onNavigateBack = {},
+            onRetry = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DetailsScreenErrorPreview() {
+    LunchtimeTheme {
+        DetailsScreenContent(
+            restaurant = sampleRestaurant,
+            uiState = DetailsViewModel.UiState.Error("Could not load reviews. Please try again later."),
+            onNavigateBack = {},
+            onRetry = {}
+        )
+    }
+}
+
+private val sampleRestaurant = Restaurant(
+    id = "1",
+    displayName = "Awesome Pizza Place",
+    rating = 4.5,
+    formattedAddress = "123 Main St, San Francisco, CA",
+    photoUrl = "",
+    latitude = 37.7749,
+    longitude = -122.4194,
+    distanceInMeters = 450f
+)
+
+private val samplePlaceDetails = PlaceDetails(
+    id = "1",
+    displayName = "Awesome Pizza Place",
+    formattedAddress = "123 Main St, San Francisco, CA",
+    latitude = 37.7749,
+    longitude = -122.4194,
+    rating = 4.5,
+    userRatingCount = 120,
+    reviews = listOf(
+        ReviewDetails(ReviewText("Best pizza in town!", "en")),
+        ReviewDetails(ReviewText("Great service and atmosphere.", "en")),
+        ReviewDetails(ReviewText("A bit pricey but worth it.", "en"))
+    )
+)

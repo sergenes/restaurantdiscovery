@@ -97,83 +97,99 @@ fun HomeScreen(
         searchViewModel.setLocation(location)
     }
 
+    HomeScreenContent(
+        location = location,
+        query = query,
+        favorites = favorites.toList(),
+        nearbyState = nearbyState,
+        searchState = searchState,
+        onQueryChange = { newQuery ->
+            query = newQuery
+            searchViewModel.onSearchQueryChanged(newQuery.text)
+        },
+        onSearch = {
+            searchViewModel.getRestaurantsByText(query.text, location)
+            keyboardController?.hide()
+        },
+        onSelected = onSelected,
+        onFavoriteClicked = { restaurant ->
+            favoritesViewModel.toggleFavorite(restaurant.id)
+        },
+        onRetrySearch = searchViewModel::retry,
+        onRetryNearby = viewModel::retry
+    )
+}
+
+@Composable
+private fun HomeScreenContent(
+    location: LatLng,
+    query: TextFieldValue,
+    favorites: List<String>,
+    nearbyState: NearByViewModel.UiState,
+    searchState: SearchViewModel.UiState,
+    onQueryChange: (TextFieldValue) -> Unit,
+    onSearch: () -> Unit,
+    onSelected: (Restaurant) -> Unit,
+    onFavoriteClicked: (Restaurant) -> Unit,
+    onRetrySearch: () -> Unit,
+    onRetryNearby: () -> Unit
+) {
     Scaffold(
         topBar = { BrandedAppHeader() }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             SearchBar(
                 query = query,
-                onQueryChange = { newQuery ->
-                    query = newQuery
-                    // Trigger debounced search automatically as user types
-                    searchViewModel.onSearchQueryChanged(newQuery.text)
-                },
-                onSearch = {
-                    // Manual search trigger (when user presses search button)
-                    searchViewModel.getRestaurantsByText(query.text, location)
-                    keyboardController?.hide()
-                }
+                onQueryChange = onQueryChange,
+                onSearch = onSearch
             )
-            // Main content based on search and nearby states
+            
             when {
-                // Show search results if there's a query
                 query.text.isNotEmpty() -> {
                     when (val state = searchState) {
-                        SearchViewModel.UiState.Initial -> {
-                            // Show empty state or prompt to search
-                            EmptySearchState()
-                        }
-                        SearchViewModel.UiState.Loading -> {
-                            IndeterminateCircularIndicator()
-                        }
+                        SearchViewModel.UiState.Initial -> EmptySearchState()
+                        SearchViewModel.UiState.Loading -> IndeterminateCircularIndicator()
                         is SearchViewModel.UiState.Success -> {
                             if (state.restaurants.isEmpty()) {
-                                EmptyResultsState("No restaurants found matching your search")
+                                EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
                             } else {
                                 RestaurantContent(
                                     restaurants = state.restaurants,
-                                    favorites = favorites.toList(),
+                                    favorites = favorites,
                                     location = location,
                                     onItemClicked = onSelected,
-                                    onFavoriteClicked = { restaurant ->
-                                        favoritesViewModel.toggleFavorite(restaurant.id)
-                                    }
+                                    onFavoriteClicked = onFavoriteClicked
                                 )
                             }
                         }
                         is SearchViewModel.UiState.Error -> {
                             ErrorView(
                                 message = state.message,
-                                onRetry = searchViewModel::retry
+                                onRetry = onRetrySearch
                             )
                         }
                     }
                 }
-                // Show nearby results if no search query
                 else -> {
                     when (val state = nearbyState) {
-                        NearByViewModel.UiState.Loading -> {
-                            IndeterminateCircularIndicator()
-                        }
+                        NearByViewModel.UiState.Loading -> IndeterminateCircularIndicator()
                         is NearByViewModel.UiState.Success -> {
                             if (state.restaurants.isEmpty()) {
-                                EmptyResultsState("No restaurants found nearby")
+                                EmptyResultsState(stringResource(R.string.no_restaurants_found_nearby))
                             } else {
                                 RestaurantContent(
                                     restaurants = state.restaurants,
-                                    favorites = favorites.toList(),
+                                    favorites = favorites,
                                     location = location,
                                     onItemClicked = onSelected,
-                                    onFavoriteClicked = { restaurant ->
-                                        favoritesViewModel.toggleFavorite(restaurant.id)
-                                    }
+                                    onFavoriteClicked = onFavoriteClicked
                                 )
                             }
                         }
                         is NearByViewModel.UiState.Error -> {
                             ErrorView(
                                 message = state.message,
-                                onRetry = viewModel::retry
+                                onRetry = onRetryNearby
                             )
                         }
                     }
@@ -323,12 +339,60 @@ fun ErrorView(
 
 @Preview(showBackground = true)
 @Composable
-fun SearchBarPreview() {
+fun HomeScreenLoadingPreview() {
     LunchtimeTheme {
-        SearchBar(
-            query = TextFieldValue("Pizza"),
+        HomeScreenContent(
+            location = sampleLocation,
+            query = TextFieldValue(""),
+            favorites = emptyList(),
+            nearbyState = NearByViewModel.UiState.Loading,
+            searchState = SearchViewModel.UiState.Initial,
             onQueryChange = {},
-            onSearch = {}
+            onSearch = {},
+            onSelected = {},
+            onFavoriteClicked = {},
+            onRetrySearch = {},
+            onRetryNearby = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenNearbySuccessPreview() {
+    LunchtimeTheme {
+        HomeScreenContent(
+            location = sampleLocation,
+            query = TextFieldValue(""),
+            favorites = sampleFavorites,
+            nearbyState = NearByViewModel.UiState.Success(sampleRestaurants),
+            searchState = SearchViewModel.UiState.Initial,
+            onQueryChange = {},
+            onSearch = {},
+            onSelected = {},
+            onFavoriteClicked = {},
+            onRetrySearch = {},
+            onRetryNearby = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenSearchSuccessPreview() {
+    LunchtimeTheme {
+        HomeScreenContent(
+            location = sampleLocation,
+            query = TextFieldValue("Pizza"),
+            favorites = sampleFavorites,
+            nearbyState = NearByViewModel.UiState.Success(sampleRestaurants),
+            searchState = SearchViewModel.UiState.Success(sampleRestaurants),
+            onQueryChange = {},
+            onSearch = {},
+            onSelected = {},
+            onFavoriteClicked = {},
+            onRetrySearch = {},
+            onRetryNearby = {}
         )
     }
 }
@@ -337,18 +401,19 @@ fun SearchBarPreview() {
 @Composable
 fun HomeScreenErrorPreview() {
     LunchtimeTheme {
-        ErrorView(
-            message = "Unable to load restaurants. Please check your internet connection.",
-            onRetry = {}
+        HomeScreenContent(
+            location = sampleLocation,
+            query = TextFieldValue(""),
+            favorites = emptyList(),
+            nearbyState = NearByViewModel.UiState.Error("Failed to load nearby restaurants"),
+            searchState = SearchViewModel.UiState.Initial,
+            onQueryChange = {},
+            onSearch = {},
+            onSelected = {},
+            onFavoriteClicked = {},
+            onRetrySearch = {},
+            onRetryNearby = {}
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenEmptySearchPreview() {
-    LunchtimeTheme {
-        EmptySearchState()
     }
 }
 
@@ -358,7 +423,7 @@ private val sampleRestaurants = listOf(
         displayName = "Awesome Pizza Place",
         rating = 4.5,
         formattedAddress = "123 Main St, San Francisco, CA",
-        photoUrl = "https://example.com/pizza.jpg",
+        photoUrl = "",
         latitude = 37.7749,
         longitude = -122.4194
     ),
@@ -367,25 +432,11 @@ private val sampleRestaurants = listOf(
         displayName = "Burger Joint",
         rating = 4.0,
         formattedAddress = "456 Market St, San Francisco, CA",
-        photoUrl = "https://example.com/burger.jpg",
+        photoUrl = "",
         latitude = 37.7750,
         longitude = -122.4195
     )
 )
 
-private val sampleLocation = LatLng(0.0, 0.0)
+private val sampleLocation = LatLng(37.7749, -122.4194)
 private val sampleFavorites = listOf("1")
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenSuccessPreview() {
-    LunchtimeTheme {
-        RestaurantContent(
-            restaurants = sampleRestaurants,
-            favorites = sampleFavorites,
-            location = sampleLocation,
-            onItemClicked = {},
-            onFavoriteClicked = {}
-        )
-    }
-}

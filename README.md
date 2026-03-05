@@ -212,7 +212,7 @@ On the tech stack side, I used:
 
 I intentionally kept things simple—no Room database for caching, no offline support—but these would be straightforward to add if needed. The architecture is designed to support these extensions.
 Testing was also a focus. I wrote unit tests with JUnit4 and mocked dependencies with MockK, using coroutine testing tools for asynchronous workflows.
-In summary, this app demonstrates that I can build production-quality Android apps using modern tools and patterns. It's clean, maintainable, performant, and thoroughly tested. I'm really happy with how it turned out, and I'm excited to answer any questions you might have or dive deeper into any part of the code.
+In summary, this app demonstrates the best practices in production-quality Android apps using modern tools and patterns. It's clean, maintainable, performant, and thoroughly tested. I'm really happy with how it turned out, and I'm ready to answer any questions you might have or dive deeper into any part of the code.
 
 ## Contact
 

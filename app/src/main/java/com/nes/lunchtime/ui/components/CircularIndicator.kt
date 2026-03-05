@@ -10,7 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nes.lunchtime.ui.theme.LunchtimeTheme
 
 @Composable
 fun IndeterminateCircularIndicator() {
@@ -26,5 +28,13 @@ fun IndeterminateCircularIndicator() {
             color = colorScheme.primary,
             strokeWidth = 8.0.dp
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun IndeterminateCircularIndicatorPreview() {
+    LunchtimeTheme {
+        IndeterminateCircularIndicator()
     }
 }

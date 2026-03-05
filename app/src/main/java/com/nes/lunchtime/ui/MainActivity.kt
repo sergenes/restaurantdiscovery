@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -59,90 +60,15 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainContent(locationViewModel: LocationViewModel) {
         val locationState by locationViewModel.locationState.collectAsState()
-        val navController = rememberNavController()
-
-        // Handle location state changes
-        when (val state = locationState) {
-            is LocationViewModel.LocationState.PermissionRequired -> {
-                LocationPermissionDialog(
-                    onGranted = locationViewModel::onPermissionGranted,
-                    onDenied = locationViewModel::onPermissionDenied
-                )
-            }
-
-            is LocationViewModel.LocationState.PermissionDenied -> {
-                LocationPermissionDeniedDialog(
-                    onGranted = locationViewModel::onPermissionGranted,
-                    onDismiss = locationViewModel::onPermissionDismissed,
-                    onGoToSettings = { goToAppSettings() }
-                )
-            }
-
-            is LocationViewModel.LocationState.LocationAvailable -> {
-                NavHost(navController, startDestination = Home) {
-                    composable<Home> {
-                        HomeScreen(
-                            location = state.location,
-                            onSelected = { restaurant ->
-                                navController.navigate(Details.fromRestaurant(restaurant))
-                            }
-                        )
-                    }
-                    composable<Details> { backStackEntry ->
-                        val details: Details = backStackEntry.toRoute()
-                        DetailsScreen(
-                            restaurant = details.toRestaurant(),
-                            onNavigateBack = { navController.popBackStack() }
-                        )
-                    }
-                }
-            }
-
-            is LocationViewModel.LocationState.Error -> {
-                ErrorScreen(
-                    message = state.message,
-                    onRetry = locationViewModel::retry
-                )
-            }
-
-            LocationViewModel.LocationState.Loading -> {
-                LoadingScreen()
-            }
-        }
-    }
-
-    @Composable
-    private fun LoadingScreen() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    }
-
-    @Composable
-    private fun ErrorScreen(
-        message: String,
-        onRetry: () -> Unit
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(Dimens.SpacingMedium),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(Dimens.SpacingMedium))
-            Button(onClick = onRetry) {
-                Text("Retry")
-            }
-        }
+        
+        MainContentImpl(
+            locationState = locationState,
+            onPermissionGranted = locationViewModel::onPermissionGranted,
+            onPermissionDenied = locationViewModel::onPermissionDenied,
+            onPermissionDismissed = locationViewModel::onPermissionDismissed,
+            onRetry = locationViewModel::retry,
+            onGoToSettings = { goToAppSettings() }
+        )
     }
 
     private fun goToAppSettings() {
@@ -151,5 +77,119 @@ class MainActivity : ComponentActivity() {
         intent.data = uri
         startActivity(intent)
         this.finish()
+    }
+}
+
+@Composable
+fun MainContentImpl(
+    locationState: LocationViewModel.LocationState,
+    onPermissionGranted: () -> Unit,
+    onPermissionDenied: () -> Unit,
+    onPermissionDismissed: () -> Unit,
+    onRetry: () -> Unit,
+    onGoToSettings: () -> Unit
+) {
+    val navController = rememberNavController()
+
+    // Handle location state changes
+    when (val state = locationState) {
+        is LocationViewModel.LocationState.PermissionRequired -> {
+            LocationPermissionDialog(
+                onGranted = onPermissionGranted,
+                onDenied = onPermissionDenied
+            )
+        }
+
+        is LocationViewModel.LocationState.PermissionDenied -> {
+            LocationPermissionDeniedDialog(
+                onGranted = onPermissionGranted,
+                onDismiss = onPermissionDismissed,
+                onGoToSettings = onGoToSettings
+            )
+        }
+
+        is LocationViewModel.LocationState.LocationAvailable -> {
+            NavHost(navController, startDestination = Home) {
+                composable<Home> {
+                    HomeScreen(
+                        location = state.location,
+                        onSelected = { restaurant ->
+                            navController.navigate(Details.fromRestaurant(restaurant))
+                        }
+                    )
+                }
+                composable<Details> { backStackEntry ->
+                    val details: Details = backStackEntry.toRoute()
+                    DetailsScreen(
+                        restaurant = details.toRestaurant(),
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        is LocationViewModel.LocationState.Error -> {
+            ErrorScreen(
+                message = state.message,
+                onRetry = onRetry
+            )
+        }
+
+        LocationViewModel.LocationState.Loading -> {
+            LoadingScreen()
+        }
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun ErrorScreen(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(Dimens.SpacingMedium),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(Dimens.SpacingMedium))
+        Button(onClick = onRetry) {
+            Text("Retry")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    LunchtimeTheme {
+        LoadingScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    LunchtimeTheme {
+        ErrorScreen(
+            message = "An error occurred while fetching your location.",
+            onRetry = {}
+        )
     }
 }

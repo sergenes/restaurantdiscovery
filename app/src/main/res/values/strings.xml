@@ -4,6 +4,8 @@
     <string name="empty_search_prompt">Type to search for restaurants</string>
     <string name="try_again">Try Again</string>
     <string name="no_restaurants_found">No restaurants found nearby</string>
+    <string name="no_restaurants_found_nearby">No restaurants found nearby</string>
+    <string name="no_restaurants_found_search">No restaurants found matching your search</string>
     <string name="unknown_error">Unknown error occurred</string>
     <string name="location_permission_required">Location permission is required to show nearby restaurants</string>
     <string name="location_permission_required_short">Location permission is required</string>

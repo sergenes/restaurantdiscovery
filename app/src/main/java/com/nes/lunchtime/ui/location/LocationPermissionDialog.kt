@@ -15,7 +15,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.nes.lunchtime.R
+import com.nes.lunchtime.ui.theme.LunchtimeTheme
 
 @Composable
 fun LocationPermissionDialog(
@@ -159,4 +161,26 @@ private fun PermissionDeniedDialog(
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RationaleDialogPreview() {
+    LunchtimeTheme {
+        RationaleDialog(
+            onConfirm = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PermissionDeniedDialogPreview() {
+    LunchtimeTheme {
+        PermissionDeniedDialog(
+            onGoToSettings = {},
+            onDismiss = {}
+        )
+    }
 }

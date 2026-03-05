@@ -42,6 +42,7 @@ import coil.request.ImageRequest
 import coil.decode.DataSource
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.theme.Dimens
+import com.nes.lunchtime.ui.theme.LunchtimeTheme
 
 @Composable
 fun RestaurantCard(
@@ -162,20 +163,47 @@ fun RestaurantCard(
 @Composable
 fun PreviewRestaurantCard() {
     val item = Restaurant(
-        "id", "Name Very Long Too Long to fit and more",
-        "Address",
-        0.0,
-        0.0,
-        3.5,
-        100,
-        ""
+        id = "id", 
+        displayName = "Name Very Long Too Long to fit and more",
+        formattedAddress = "123 Address St, City",
+        latitude = 0.0,
+        longitude = 0.0,
+        rating = 3.5,
+        userRatingCount = 100,
+        photoUrl = ""
     )
     var isFavorite by remember { mutableStateOf(false) }
 
-    RestaurantCard(
-        restaurant = item,
-        isFavorite = isFavorite,
-        onItemClicked = {},
-        onFavoriteClicked = { isFavorite = !isFavorite }
+    LunchtimeTheme {
+        RestaurantCard(
+            restaurant = item,
+            isFavorite = isFavorite,
+            onItemClicked = {},
+            onFavoriteClicked = { isFavorite = !isFavorite }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewRestaurantCardFavorite() {
+    val item = Restaurant(
+        id = "id", 
+        displayName = "Italian Bistro",
+        formattedAddress = "456 Pasta Ave, City",
+        latitude = 0.0,
+        longitude = 0.0,
+        rating = 4.8,
+        userRatingCount = 250,
+        photoUrl = ""
     )
+
+    LunchtimeTheme {
+        RestaurantCard(
+            restaurant = item,
+            isFavorite = true,
+            onItemClicked = {},
+            onFavoriteClicked = {}
+        )
+    }
 }
