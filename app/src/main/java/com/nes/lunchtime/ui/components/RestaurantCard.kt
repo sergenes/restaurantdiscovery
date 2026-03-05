@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -55,7 +56,7 @@ fun RestaurantCard(
             .shadow(16.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
             .clickable { onItemClicked(restaurant) },
-        color = Color.White
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
@@ -106,7 +107,7 @@ fun RestaurantCard(
                     text = restaurant.displayName,
                     style = typography.titleMedium.copy(fontSize = 18.sp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -120,7 +121,7 @@ fun RestaurantCard(
                     Text(
                         text = "${restaurant.rating} • ${restaurant.userRatingCount} reviews",
                         style = typography.bodyMedium,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
@@ -128,7 +129,7 @@ fun RestaurantCard(
                 Text(
                     text = restaurant.formattedAddress,
                     style = typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Column(
