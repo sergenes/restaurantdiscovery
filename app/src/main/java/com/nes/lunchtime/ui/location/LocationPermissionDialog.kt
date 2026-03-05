@@ -14,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
+import com.nes.lunchtime.R
 
 @Composable
 fun LocationPermissionDialog(
@@ -96,14 +98,13 @@ private fun RationaleDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Location Access Needed",
+                text = stringResource(R.string.location_rationale_title),
                 style = MaterialTheme.typography.titleLarge
             )
         },
         text = {
             Text(
-                text = "This app needs access to location to show you nearby restaurants. " +
-                        "Without location permission, we can't provide personalized recommendations.",
+                text = stringResource(R.string.location_rationale_message),
                 style = MaterialTheme.typography.bodyLarge
             )
         },
@@ -111,14 +112,14 @@ private fun RationaleDialog(
             Button(
                 onClick = onConfirm
             ) {
-                Text("Grant Access")
+                Text(stringResource(R.string.grant_access))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss
             ) {
-                Text("Not Now")
+                Text(stringResource(R.string.not_now))
             }
         }
     )
@@ -133,13 +134,13 @@ private fun PermissionDeniedDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Permission Required",
+                text = stringResource(R.string.permission_required_title),
                 style = MaterialTheme.typography.titleLarge
             )
         },
         text = {
             Text(
-                text = "Location permission is permanently denied. Please enable it in app settings to use this feature.",
+                text = stringResource(R.string.permission_denied_message),
                 style = MaterialTheme.typography.bodyLarge
             )
         },
@@ -147,14 +148,14 @@ private fun PermissionDeniedDialog(
             Button(
                 onClick = onGoToSettings
             ) {
-                Text("Open Settings")
+                Text(stringResource(R.string.open_settings))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
