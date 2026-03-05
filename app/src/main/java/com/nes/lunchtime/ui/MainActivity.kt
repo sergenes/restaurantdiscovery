@@ -22,9 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -32,17 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.nes.lunchtime.domain.Restaurant
-
-import com.nes.lunchtime.ui.home.HomeScreen
-import com.nes.lunchtime.ui.home.nearby.NearByViewModel
+import androidx.navigation.toRoute
 import com.nes.lunchtime.ui.details.DetailsScreen
 import com.nes.lunchtime.ui.details.DetailsViewModel
+import com.nes.lunchtime.ui.home.HomeScreen
 import com.nes.lunchtime.ui.home.favorites.FavoritesViewModel
+import com.nes.lunchtime.ui.home.nearby.NearByViewModel
 import com.nes.lunchtime.ui.home.search.SearchViewModel
 import com.nes.lunchtime.ui.location.LocationPermissionDeniedDialog
 import com.nes.lunchtime.ui.location.LocationPermissionDialog
 import com.nes.lunchtime.ui.location.LocationViewModel
+import com.nes.lunchtime.ui.navigation.Details
+import com.nes.lunchtime.ui.navigation.Home
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -81,7 +79,6 @@ class MainActivity : ComponentActivity() {
     ) {
         val locationState by locationViewModel.locationState.collectAsState()
         val navController = rememberNavController()
-        var selectedRestaurant by remember { mutableStateOf<Restaurant?>(null) }
 
         // Handle location state changes
         when (val state = locationState) {
@@ -101,27 +98,25 @@ class MainActivity : ComponentActivity() {
             }
 
             is LocationViewModel.LocationState.LocationAvailable -> {
-                NavHost(navController, startDestination = "home") {
-                    composable("home") {
+                NavHost(navController, startDestination = Home) {
+                    composable<Home> {
                         HomeScreen(
                             viewModel = nearByViewModel,
                             location = state.location,
                             searchViewModel = searchViewModel,
                             favoritesViewModel = favoritesViewModel,
                             onSelected = { restaurant ->
-                                selectedRestaurant = restaurant
-                                navController.navigate("details")
+                                navController.navigate(Details.fromRestaurant(restaurant))
                             }
                         )
                     }
-                    composable("details") {
-                        selectedRestaurant?.let {
-                            DetailsScreen(
-                                restaurant = it,
-                                viewModel = detailsViewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                    composable<Details> { backStackEntry ->
+                        val details: Details = backStackEntry.toRoute()
+                        DetailsScreen(
+                            restaurant = details.toRestaurant(),
+                            viewModel = detailsViewModel,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
                     }
                 }
             }
@@ -154,7 +149,6 @@ class MainActivity : ComponentActivity() {
         message: String,
         onRetry: () -> Unit
     ) {
-        // Simple error screen with retry button
         Column(
             modifier = Modifier
                 .fillMaxSize()
