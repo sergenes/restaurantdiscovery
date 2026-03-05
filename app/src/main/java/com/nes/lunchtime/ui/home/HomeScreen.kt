@@ -417,6 +417,14 @@ fun HomeScreenErrorPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun EmptyResultsStatePreview() {
+    LunchtimeTheme {
+        EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
+    }
+}
+
 private val sampleRestaurants = listOf(
     Restaurant(
         id = "1",
