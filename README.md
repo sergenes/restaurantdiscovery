@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://www.android.com/)
 [![Language](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
-[![Version](https://img.shields.io/badge/Version-1.9-orange.svg)](https://github.com/nes/lunchtime/releases)
+[![Version](https://img.shields.io/badge/Version-1.9-orange.svg)](https://github.com/nes/lunchtime/releases/tag)
 
 
 Lunchtime Restaurant Discovery: An Android App That Demonstrates Best Practices
