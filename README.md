@@ -48,6 +48,11 @@ For security best practices, sensitive information such as the Google Places API
 - Min SDK: 24
 - Target SDK: 36
 
+## Testing
+```bash
+./gradlew :app:compileDebugUnitTestKotlin
+```
+
 ## Architecture & Design Patterns
 
 - Clean Architecture with clear separation of concerns:

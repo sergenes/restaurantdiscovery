@@ -121,4 +121,5 @@ dependencies {
     // Unit tests support
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotlin.test)
 }
