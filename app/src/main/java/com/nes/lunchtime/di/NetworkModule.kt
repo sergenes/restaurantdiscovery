@@ -1,6 +1,7 @@
 package com.nes.lunchtime.di
 
 import android.util.Log
+import com.nes.lunchtime.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    private const val TIMEOUT_MILLIS = 30_000L
+
     @Provides
     @Singleton
     fun provideHttpClient(): HttpClient {
@@ -34,23 +37,28 @@ object NetworkModule {
                     isLenient = true
                 })
                 engine {
-                    connectTimeout = 60_000
-                    socketTimeout = 60_000
+                    connectTimeout = TIMEOUT_MILLIS.toInt()
+                    socketTimeout = TIMEOUT_MILLIS.toInt()
                 }
             }
-            install(Logging) {
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        Log.d("HttpClient", message)
+            
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            Log.d("HttpClient", message)
+                        }
+                    }
+                    level = LogLevel.ALL
+                }
+                
+                install(ResponseObserver) {
+                    onResponse { response ->
+                        Log.d("HttpClient", "HTTP status: ${response.status.value}")
                     }
                 }
-                level = LogLevel.ALL
             }
-            install(ResponseObserver) {
-                onResponse { response ->
-                    Log.d("HttpClient", "HTTP status: ${response.status.value}")
-                }
-            }
+
             install(DefaultRequest) {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
             }

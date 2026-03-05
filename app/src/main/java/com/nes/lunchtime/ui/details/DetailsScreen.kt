@@ -8,8 +8,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.net.model.ReviewDetails
@@ -42,7 +44,10 @@ fun DetailsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button_content_description)
+                        )
                     }
                 }
             )
@@ -93,12 +98,12 @@ private fun RestaurantBasicInfo(restaurant: Restaurant) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Distance: ${formatDistance(restaurant.distanceInMeters)}",
+            text = stringResource(R.string.distance_label, formatDistance(restaurant.distanceInMeters)),
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Rating: ${restaurant.rating}",
+            text = stringResource(R.string.rating_label, restaurant.rating),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -112,7 +117,7 @@ private fun DetailsContent(details: PlaceDetails) {
     ) {
         item {
             Text(
-                text = "Reviews",
+                text = stringResource(R.string.reviews_title),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )

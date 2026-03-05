@@ -1,5 +1,11 @@
 # Lunchtime Restaurant Discovery
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://www.android.com/)
+[![Language](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org/)
+[![Version](https://img.shields.io/badge/Version-1.9-orange.svg)](https://github.com/nes/lunchtime/releases)
+
+
 Lunchtime Restaurant Discovery: An Android App That Demonstrates Best Practices
 
 ## Brief Project Description
@@ -23,13 +29,13 @@ implemented as a Kotlin Jetpack Compose project.
 ## Build Instruction
 
 For security best practices, sensitive information such as the Google Places API key is stored in
-`gradle.properties` and excluded from GitHub. The file is included in the repository with a
-placeholder - please replace it with the actual API key value before you build the project.
+`local.properties` (referenced via `BuildConfig`) and excluded from GitHub. Please ensure you have a valid key set in your local environment before building.
 
 ## Environment
 
 - Android Studio Ladybug | 2024.2.1 Patch 2
 - Gradle Version: 8.9
+- Kotlin: 2.0.0
 
 ## Architecture & Design Patterns
 
@@ -39,11 +45,45 @@ placeholder - please replace it with the actual API key value before you build t
     - Presentation Layer (MVVM with ViewModels)
 
 
+- Type-Safe Navigation: Uses the latest Jetpack Navigation (2.8.0+) with Kotlin Serialization for compile-time safe routing.
 - Single Activity architecture using Jetpack Compose
-- Unidirectional Data Flow using `StateFlow`
+- Unidirectional Data Flow using `StateFlow`, and actions are passed up via lambdas.
 - State Management using `sealed` classes for UI states
 - State Encapsulation in ViewModels (`MutableStateFlow` field is always private)
 - Error Handling with `Result`
+- Dependency Injection: Powered by Hilt for modular and testable code.
+
+
+
+
+
+```mermaid
+graph TD
+    subgraph Presentation_Layer
+        MA[MainActivity] --> NavHost[NavHost / Type-Safe Routes]
+        NavHost --> HS[HomeScreen]
+        NavHost --> DS[DetailsScreen]
+        HS --> VM1[NearByViewModel]
+        HS --> VM2[SearchViewModel]
+        DS --> VM3[DetailsViewModel]
+    end
+
+    subgraph Domain_Layer
+        VM1 & VM2 --> UC[GetRestaurantsUseCase]
+        VM3 --> Repo
+        UC --> Repo[RestaurantsRepository Interface]
+        Repo --> Model[Restaurant / PlaceDetails Models]
+    end
+
+    subgraph Data_Layer
+        RepoImpl[RestaurantsRepositoryImpl] -. implements .-> Repo
+        RepoImpl --> GPC[GooglePlacesClient]
+        GPC --> Ktor[Ktor HTTP Client]
+        
+        FavRepo[FavoritesRepository] --> FDS[FavoritesDataSource]
+        FDS --> DS_Prefs[DataStore Preferences]
+    end
+```
 
 ## Key Technologies & Libraries
 

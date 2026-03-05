@@ -35,10 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.components.BrandedAppHeader
 import com.nes.lunchtime.ui.components.IndeterminateCircularIndicator
@@ -171,11 +173,11 @@ private fun SearchBar(
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Search restaurants") },
+            placeholder = { Text(stringResource(R.string.search_placeholder)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon"
+                    contentDescription = stringResource(R.string.search_icon_content_description)
                 )
             },
             singleLine = true,
@@ -250,7 +252,7 @@ private fun EmptySearchState() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Type to search for restaurants",
+            text = stringResource(R.string.empty_search_prompt),
             style = typography.bodyLarge,
             color = colorScheme.onSurfaceVariant
         )
@@ -274,7 +276,7 @@ fun ErrorView(
             )
             Button(onClick = onRetry) {
                 Text(
-                    text = "Try Again",
+                    text = stringResource(R.string.try_again),
                     color = Color.White
                 )
             }

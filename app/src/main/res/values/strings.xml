@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">Lunchtime</string>
+    <string name="search_placeholder">Search restaurants</string>
+    <string name="empty_search_prompt">Type to search for restaurants</string>
+    <string name="try_again">Try Again</string>
+    <string name="no_restaurants_found">No restaurants found nearby</string>
+    <string name="unknown_error">Unknown error occurred</string>
+    <string name="location_permission_required">Location permission is required to show nearby restaurants</string>
+    <string name="location_permission_required_short">Location permission is required</string>
+    <string name="distance_label">Distance: %1$s</string>
+    <string name="rating_label">Rating: %1$.1f</string>
+    <string name="reviews_title">Reviews</string>
+    <string name="retry">Retry</string>
+    <string name="back_button_content_description">Back</string>
+    <string name="search_icon_content_description">Search Icon</string>
+    <string name="no_results_for_query">No restaurants found matching \'%1$s\'</string>
+
+    <string name="location_rationale_title">Location Access Needed</string>
+    <string name="location_rationale_message">This app needs access to location to show you nearby restaurants. Without location permission, we can\'t provide personalized recommendations.</string>
+    <string name="grant_access">Grant Access</string>
+    <string name="not_now">Not Now</string>
+
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_denied_message">Location permission is permanently denied. Please enable it in app settings to use this feature.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
 </resources>

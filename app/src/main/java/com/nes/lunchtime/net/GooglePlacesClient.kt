@@ -33,6 +33,12 @@ class GooglePlacesClient @Inject constructor(
 ) {
     companion object {
         private const val BASE_URL = "https://places.googleapis.com"
+        
+        private const val SEARCH_FIELD_MASK = "places.id,places.displayName,places.formattedAddress," +
+                "places.location,places.rating,places.userRatingCount,places.photos"
+        
+        private const val DETAILS_FIELD_MASK = "id,displayName,formattedAddress,location,rating," +
+                "userRatingCount,reviews"
     }
 
     /**
@@ -58,11 +64,7 @@ class GooglePlacesClient @Inject constructor(
         }.build()
         val response: NearbySearchResponse = client.post(url) {
             header("X-Goog-Api-Key", apiKey)
-            header(
-                "X-Goog-FieldMask",
-                "places.id,places.displayName,places.formattedAddress," +
-                        "places.location,places.rating,places.userRatingCount,places.photos"
-            )
+            header("X-Goog-FieldMask", SEARCH_FIELD_MASK)
             setBody(
                 NearbySearchRequest(
                     maxResultCount = maxResultCount,
@@ -118,10 +120,7 @@ class GooglePlacesClient @Inject constructor(
 
         val response: PlaceDetailsResponse = client.get(url) {
             header("X-Goog-Api-Key", apiKey)
-            header(
-                "X-Goog-FieldMask", "id,displayName,formattedAddress,location,rating," +
-                        "userRatingCount,reviews"
-            )
+            header("X-Goog-FieldMask", DETAILS_FIELD_MASK)
         }.body()
 
         return PlaceDetails(
@@ -160,11 +159,7 @@ class GooglePlacesClient @Inject constructor(
         }.build()
         val response: NearbySearchResponse = client.post(url) {
             header("X-Goog-Api-Key", apiKey)
-            header(
-                "X-Goog-FieldMask",
-                "places.id,places.displayName,places.formattedAddress," +
-                        "places.location,places.rating,places.userRatingCount,places.photos"
-            )
+            header("X-Goog-FieldMask", SEARCH_FIELD_MASK)
             setBody(
                 TextSearchRequest(
                     textQuery = searchText,
