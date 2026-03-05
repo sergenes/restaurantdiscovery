@@ -41,6 +41,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.decode.DataSource
 import com.nes.lunchtime.domain.Restaurant
+import com.nes.lunchtime.ui.theme.Dimens
 
 @Composable
 fun RestaurantCard(
@@ -52,17 +53,17 @@ fun RestaurantCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .shadow(16.dp, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
+            .padding(horizontal = Dimens.CardPaddingHorizontal, vertical = Dimens.CardPaddingVertical)
+            .shadow(Dimens.CardElevation, RoundedCornerShape(Dimens.CardCornerRadius))
+            .clip(RoundedCornerShape(Dimens.CardCornerRadius))
             .clickable { onItemClicked(restaurant) },
         color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(Dimens.SpacingMedium)
                 .fillMaxWidth()
-                .height(88.dp),
+                .height(Dimens.CardHeight),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
@@ -91,12 +92,12 @@ fun RestaurantCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(64.dp),
+                    .width(Dimens.CardImageWidth),
                 placeholder = painterResource(android.R.drawable.ic_menu_gallery),
                 error = painterResource(android.R.drawable.stat_notify_error)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Dimens.SpacingMedium))
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -105,7 +106,7 @@ fun RestaurantCard(
             ) {
                 Text(
                     text = restaurant.displayName,
-                    style = typography.titleMedium.copy(fontSize = 18.sp),
+                    style = typography.titleMedium.copy(fontSize = Dimens.TextSizeMedium),
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -116,16 +117,16 @@ fun RestaurantCard(
                         painter = painterResource(android.R.drawable.btn_star_big_on),
                         contentDescription = "Rating Star",
                         tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(Dimens.IconSizeSmall)
                     )
                     Text(
                         text = "${restaurant.rating} • ${restaurant.userRatingCount} reviews",
                         style = typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 4.dp)
+                        modifier = Modifier.padding(start = Dimens.SpacingXSmall)
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Dimens.SpacingXSmall))
                 Text(
                     text = restaurant.formattedAddress,
                     style = typography.bodyMedium,
@@ -140,8 +141,8 @@ fun RestaurantCard(
             ) {
                 IconButton(
                     modifier = Modifier
-                        .height(30.dp)
-                        .width(24.dp),
+                        .height(Dimens.IconButtonHeight)
+                        .width(Dimens.IconSizeButton),
                     onClick = { onFavoriteClicked(restaurant) }) {
                     Icon(
                         painter = painterResource(

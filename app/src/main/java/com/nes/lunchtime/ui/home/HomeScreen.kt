@@ -52,6 +52,7 @@ import com.nes.lunchtime.ui.home.map.RestaurantMapView
 import com.nes.lunchtime.ui.home.nearby.NearByViewModel
 import com.nes.lunchtime.ui.home.search.SearchViewModel
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
+import com.nes.lunchtime.ui.theme.Dimens
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -71,6 +72,18 @@ fun HomeScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
     favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
+    /**
+     * Search query state managed in Composable (not ViewModel) for better text field performance.
+     *
+     * This is an acceptable pattern because:
+     * 1. TextField needs immediate, lag-free updates - storing in StateFlow would add latency
+     * 2. The actual business logic (debouncing, API calls) is in SearchViewModel
+     * 3. Search results (the important data) ARE in ViewModel and survive config changes
+     * 4. Losing the typed query on rotation is acceptable for search fields
+     *
+     * The query text is passed to SearchViewModel for debouncing (line 96), so business
+     * logic remains in the ViewModel layer where it belongs.
+     */
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val favorites by favoritesViewModel.favorites.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -178,7 +191,7 @@ private fun SearchBar(
 ) {
     Column(modifier = Modifier
         .background(colorScheme.surface)
-        .padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
+        .padding(bottom = Dimens.SpacingMedium, start = Dimens.SpacingSmall, end = Dimens.SpacingSmall)
     ) {
         TextField(
             value = query,
@@ -201,10 +214,10 @@ private fun SearchBar(
                 unfocusedContainerColor = colorScheme.surfaceContainer,
                 disabledContainerColor = colorScheme.surfaceContainer,
             ),
-            shape = RoundedCornerShape(25.dp),
+            shape = RoundedCornerShape(Dimens.SearchBarCornerRadius),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Dimens.SearchBarPaddingHorizontal)
         )
     }
 
@@ -250,7 +263,7 @@ private fun RestaurantContent(
             onViewTypeChange = { currentViewType = it },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+                .padding(bottom = Dimens.SpacingMedium)
         )
     }
 }
@@ -291,10 +304,10 @@ fun ErrorView(
     Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 64.dp)
+            modifier = Modifier.padding(top = Dimens.SpacingXLarge)
         ) {
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = Dimens.SpacingMedium, vertical = Dimens.SpacingSmall),
                 text = message,
                 color = colorScheme.onBackground
             )

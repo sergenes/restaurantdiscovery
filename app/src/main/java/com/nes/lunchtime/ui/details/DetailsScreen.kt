@@ -18,6 +18,7 @@ import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.net.model.ReviewDetails
 import com.nes.lunchtime.ui.components.IndeterminateCircularIndicator
 import com.nes.lunchtime.ui.home.ErrorView
+import com.nes.lunchtime.ui.theme.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,24 +86,24 @@ private fun RestaurantBasicInfo(restaurant: Restaurant) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(Dimens.SpacingMedium)
     ) {
         Text(
             text = restaurant.displayName,
             style = MaterialTheme.typography.headlineSmall
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Dimens.SpacingXSmall))
         Text(
             text = restaurant.formattedAddress,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Dimens.SpacingXSmall))
         Text(
             text = stringResource(R.string.distance_label, formatDistance(restaurant.distanceInMeters)),
             style = MaterialTheme.typography.bodyMedium
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Dimens.SpacingXSmall))
         Text(
             text = stringResource(R.string.rating_label, restaurant.rating),
             style = MaterialTheme.typography.bodyMedium
@@ -114,20 +115,20 @@ private fun RestaurantBasicInfo(restaurant: Restaurant) {
 private fun DetailsContent(details: PlaceDetails) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(Dimens.SpacingMedium)
     ) {
         item {
             Text(
                 text = stringResource(R.string.reviews_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = Dimens.SpacingSmall)
             )
         }
 
         details.reviews.let { reviews ->
             items(reviews) { review ->
                 ReviewItem(review)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Dimens.SpacingSmall))
             }
         }
     }
@@ -137,12 +138,12 @@ private fun DetailsContent(details: PlaceDetails) {
 private fun ReviewItem(review: ReviewDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Dimens.CardElevationSmall)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Dimens.SpacingMedium)
         ) {
             Text(
                 text = review.text.text,

@@ -38,6 +38,7 @@ import com.nes.lunchtime.ui.location.LocationViewModel
 import com.nes.lunchtime.ui.navigation.Details
 import com.nes.lunchtime.ui.navigation.Home
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
+import com.nes.lunchtime.ui.theme.Dimens
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -128,7 +129,7 @@ class MainActivity : ComponentActivity() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(Dimens.SpacingMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -137,7 +138,7 @@ class MainActivity : ComponentActivity() {
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Dimens.SpacingMedium))
             Button(onClick = onRetry) {
                 Text("Retry")
             }

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.components.RestaurantCard
+import com.nes.lunchtime.ui.theme.Dimens
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -122,7 +123,7 @@ fun RestaurantMapView(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 230.dp)
+                    .padding(start = Dimens.SpacingSmall, end = Dimens.SpacingSmall, bottom = Dimens.MapCardBottomPadding)
             ) {
                 RestaurantCard(
                     restaurant = restaurant,
