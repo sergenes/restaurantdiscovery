@@ -1,22 +1,20 @@
 package com.nes.lunchtime.ui.home.search
 
-import com.nes.lunchtime.repo.RestaurantsRepository
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nes.lunchtime.domain.Restaurant
 import com.google.android.gms.maps.model.LatLng
+import com.nes.lunchtime.domain.GetRestaurantsUseCase
+import com.nes.lunchtime.domain.Restaurant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repo: RestaurantsRepository
+    private val getRestaurantsUseCase: GetRestaurantsUseCase
 ) : ViewModel() {
 
     sealed class UiState {
@@ -30,7 +28,6 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private data class SearchParams(val query: String, val location: LatLng)
-
     private var lastSearchParams: SearchParams? = null
 
     fun getRestaurantsByText(searchText: String, location: LatLng) {
@@ -51,37 +48,21 @@ class SearchViewModel @Inject constructor(
 
     private fun searchRestaurants(searchText: String, location: LatLng) {
         viewModelScope.launch {
-            try {
-                _uiState.value = UiState.Loading
-
-                val result = repo.getRestaurantsByText(searchText, location)
-                _uiState.value = when {
-                    result.isSuccess -> {
-                        val restaurants = result.getOrNull()
-                        if (restaurants.isNullOrEmpty()) {
-                            UiState.Error("No restaurants found matching '$searchText'")
-                        } else {
-                            UiState.Success(restaurants.sortedBy { it.distanceInMeters })
-                        }
+            _uiState.value = UiState.Loading
+            val result = getRestaurantsUseCase.search(searchText, location)
+            
+            _uiState.value = result.fold(
+                onSuccess = { restaurants ->
+                    if (restaurants.isEmpty()) {
+                        UiState.Error("No restaurants found matching \'$searchText\'")
+                    } else {
+                        UiState.Success(restaurants)
                     }
-
-                    result.isFailure -> {
-                        when (val exception = result.exceptionOrNull()) {
-                            is CancellationException -> throw exception // Don't catch cancellation
-                            null -> UiState.Error("Unknown error occurred")
-                            else -> UiState.Error(
-                                exception.localizedMessage ?: "Unknown error occurred"
-                            )
-                        }
-                    }
-
-                    else -> UiState.Error("Unknown error occurred")
+                },
+                onFailure = { exception ->
+                    UiState.Error(exception.localizedMessage ?: "Unknown error occurred")
                 }
-            } catch (e: CancellationException) {
-                throw e // Don't catch cancellation
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error occurred")
-            }
+            )
         }
     }
 
