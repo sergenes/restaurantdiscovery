@@ -31,17 +31,18 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(): HttpClient {
         return HttpClient(Android) {
+            engine {
+                connectTimeout = TIMEOUT_MILLIS.toInt()
+                socketTimeout = TIMEOUT_MILLIS.toInt()
+            }
+
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true
                     isLenient = true
                 })
-                engine {
-                    connectTimeout = TIMEOUT_MILLIS.toInt()
-                    socketTimeout = TIMEOUT_MILLIS.toInt()
-                }
             }
-            
+
             if (BuildConfig.DEBUG) {
                 install(Logging) {
                     logger = object : Logger {
