@@ -89,10 +89,12 @@ fun RestaurantMapView(
             properties = mapProperties,
             uiSettings = mapUiSettings
         ) {
-            val icon = createCustomMarkerIcon(
-                context,
-                R.mipmap.pins
-            )
+            // Marker icons should be created inside the GoogleMap scope or after initialization
+            // to avoid "IBitmapDescriptorFactory is not initialized" crash.
+            val markerIcon = remember(context) {
+                createCustomMarkerIcon(context, R.mipmap.pins)
+            }
+
             restaurants.forEach { restaurant ->
                 val markerPosition = LatLng(restaurant.latitude, restaurant.longitude)
 
@@ -101,7 +103,7 @@ fun RestaurantMapView(
                         position = markerPosition
                     ),
                     title = restaurant.displayName,
-                    icon = icon,
+                    icon = markerIcon,
                     draggable = false,
                     onClick = {
                         selectedRestaurant = if (selectedRestaurant?.id == restaurant.id) {
