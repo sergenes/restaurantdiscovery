@@ -8,6 +8,9 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -33,6 +36,11 @@ class FavoritesViewModelTest {
 
     @Test
     fun `toggleFavorite adds restaurant when not in favorites`() = runTest {
+        // Start collecting the StateFlow so it updates its value
+        val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.favorites.collect()
+        }
+
         val restaurantId = "test_id"
         favoritesFlow.value = emptySet()
 
@@ -50,10 +58,16 @@ class FavoritesViewModelTest {
                 isFavorite = true
             )
         }
+        collectJob.cancel()
     }
 
     @Test
     fun `toggleFavorite removes restaurant when already in favorites`() = runTest {
+        // Start collecting the StateFlow so it updates its value
+        val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.favorites.collect()
+        }
+
         val restaurantId = "test_id"
         favoritesFlow.value = setOf(restaurantId)
 
@@ -71,5 +85,6 @@ class FavoritesViewModelTest {
                 isFavorite = false
             )
         }
+        collectJob.cancel()
     }
 }
