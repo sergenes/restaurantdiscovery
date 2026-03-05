@@ -29,7 +29,14 @@ implemented as a Kotlin Jetpack Compose project.
 ## Build Instruction
 
 For security best practices, sensitive information such as the Google Places API key is stored in
-`local.properties` (referenced via `BuildConfig`) and excluded from GitHub. Please ensure you have a valid key set in your local environment before building.
+`local.properties` (referenced via `BuildConfig`) and excluded from GitHub. 
+
+### How to obtain the API key:
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2.  Create or select a project.
+3.  Enable the **Places API (New)**.
+4.  Go to **APIs & Services > Credentials** and create an **API key**.
+5.  Add `google.places.api.key=YOUR_API_KEY` to your `local.properties` file.
 
 ## Environment
 
