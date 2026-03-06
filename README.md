@@ -10,7 +10,7 @@ Lunchtime Restaurant Discovery: An Android App That Demonstrates Best Practices
 
 ## Brief Project Description
 
-LunchTime is a modern Android application built with best practices and latest technologies. This
+Lunchtime is a modern Android application built with best practices and latest technologies. This
 project was created using the default Android Studio New App template (Empty Activity) and
 implemented as a Kotlin Jetpack Compose project.
 
@@ -145,7 +145,7 @@ graph TD
     - Kotlin Coroutines & Flow
 - Data Persistence:
     - DataStore for lightweight favorites storage
- - Location-based services:
+- Location-based services:
     - [FusedLocationProvider](https://developers.google.com/location-context/fused-location-provider)
       - Simplified API compared to LocationManager
       - Battery-efficient
@@ -187,7 +187,7 @@ graph TD
     - [runCatching](https://dev.to/1noshishi/mastering-runcatching-in-kotlin-how-to-avoid-coroutine-cancellation-issues-5go2)
 
 
-## Walk Through the Implementation
+## Walkthrough of the Implementation
 
 At its core, this app uses the Google Places API to fetch and display nearby restaurants based on the user's location.
 
@@ -195,24 +195,24 @@ When you launch the app, it starts by asking for location permission in a user-f
 
 Selecting a restaurant brings up basic details like name, address, and ratings. A cool bonus: users can favorite restaurants, and that status is saved.
 
-I followed Clean Architecture principles, splitting the app into three layers:
+The app follows Clean Architecture principles, splitting the codebase into three layers:
 
 - Data Layer using the Repository Pattern for clean data handling.
 - Domain Layer, where all the business logic lives in reusable use cases.
 - Presentation Layer, built with Jetpack Compose and MVVM, which keeps the UI reactive and maintainable.
-- For state management, I used StateFlow with a unidirectional data flow, which simplifies updates and keeps things predictable. Errors are managed using a Result wrapper, and sealed classes help define clear UI states.
+- For state management, StateFlow is used with a unidirectional data flow, which simplifies updates and keeps things predictable. Errors are managed using a Result wrapper, and sealed classes help define clear UI states.
 
-On the tech stack side, I used:
+The tech stack includes:
 
 - Ktor Client for networking—lightweight, flexible, and coroutine-friendly.
 - Coil for image loading—optimized for Compose with caching baked in.
 - DataStore for simple favorites persistence.
 - Hilt for dependency injection.
-- And FusedLocationProvider for battery-efficient location tracking.
+- FusedLocationProvider for battery-efficient location tracking.
 
-I intentionally kept things simple—no Room database for caching, no offline support—but these would be straightforward to add if needed. The architecture is designed to support these extensions.
-Testing was also a focus. I wrote unit tests with JUnit4 and mocked dependencies with MockK, using coroutine testing tools for asynchronous workflows.
-In summary, this app demonstrates the best practices in production-quality Android apps using modern tools and patterns. It's clean, maintainable, performant, and thoroughly tested. I'm really happy with how it turned out, and I'm ready to answer any questions you might have or dive deeper into any part of the code.
+The implementation intentionally keeps things simple—no Room database for caching, no offline support—but these would be straightforward to add if needed. The architecture is designed to support these extensions.
+Testing was also a focus. Unit tests are written with JUnit4 and dependencies are mocked with MockK, using coroutine testing tools for asynchronous workflows.
+In summary, this app demonstrates best practices in production-quality Android apps using modern tools and patterns. It's clean, maintainable, performant, and thoroughly tested.
 
 ## Contact
 
