@@ -24,7 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +67,7 @@ sealed class ViewType(
 @Composable
 fun HomeScreen(
     location: LatLng,
+    onRefreshLocation: () -> Unit,
     onSelected: (Restaurant) -> Unit,
     viewModel: NearByViewModel = hiltViewModel(),
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -91,9 +92,10 @@ fun HomeScreen(
     val nearbyState by viewModel.uiState.collectAsState()
     val searchState by searchViewModel.uiState.collectAsState()
 
-    // Load nearby restaurants when location changes
-    LaunchedEffect(location) {
-        viewModel.onLoad(location)
+    // Sync location into ViewModels — SideEffect runs after every successful composition,
+    // but StateFlow/MutableStateFlow deduplicate, so no redundant work is triggered.
+    SideEffect {
+        viewModel.setLocation(location)
         searchViewModel.setLocation(location)
     }
 
@@ -115,6 +117,7 @@ fun HomeScreen(
         onFavoriteClicked = { restaurant ->
             favoritesViewModel.toggleFavorite(restaurant.id)
         },
+        onRefresh = onRefreshLocation,
         onRetrySearch = searchViewModel::retry,
         onRetryNearby = viewModel::retry
     )
@@ -131,11 +134,12 @@ private fun HomeScreenContent(
     onSearch: () -> Unit,
     onSelected: (Restaurant) -> Unit,
     onFavoriteClicked: (Restaurant) -> Unit,
+    onRefresh: () -> Unit,
     onRetrySearch: () -> Unit,
     onRetryNearby: () -> Unit
 ) {
     Scaffold(
-        topBar = { BrandedAppHeader() }
+        topBar = { BrandedAppHeader(onRefresh = onRefresh) }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             SearchBar(
@@ -172,7 +176,8 @@ private fun HomeScreenContent(
                 }
                 else -> {
                     when (val state = nearbyState) {
-                        NearByViewModel.UiState.Loading -> IndeterminateCircularIndicator()
+                        NearByViewModel.UiState.Loading,
+                        NearByViewModel.UiState.Refreshing -> IndeterminateCircularIndicator()
                         is NearByViewModel.UiState.Success -> {
                             if (state.restaurants.isEmpty()) {
                                 EmptyResultsState(stringResource(R.string.no_restaurants_found_nearby))
@@ -351,6 +356,7 @@ fun HomeScreenLoadingPreview() {
             onSearch = {},
             onSelected = {},
             onFavoriteClicked = {},
+            onRefresh = {},
             onRetrySearch = {},
             onRetryNearby = {}
         )
@@ -371,6 +377,7 @@ fun HomeScreenNearbySuccessPreview() {
             onSearch = {},
             onSelected = {},
             onFavoriteClicked = {},
+            onRefresh = {},
             onRetrySearch = {},
             onRetryNearby = {}
         )
@@ -391,6 +398,7 @@ fun HomeScreenSearchSuccessPreview() {
             onSearch = {},
             onSelected = {},
             onFavoriteClicked = {},
+            onRefresh = {},
             onRetrySearch = {},
             onRetryNearby = {}
         )
@@ -411,6 +419,7 @@ fun HomeScreenErrorPreview() {
             onSearch = {},
             onSelected = {},
             onFavoriteClicked = {},
+            onRefresh = {},
             onRetrySearch = {},
             onRetryNearby = {}
         )

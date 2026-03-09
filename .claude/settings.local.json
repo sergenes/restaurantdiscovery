@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :app:testDebugUnitTest:*)",
+      "Bash(git stash:*)",
+      "Bash(./gradlew :app:compileDebugKotlin:*)"
+    ]
+  }
+}

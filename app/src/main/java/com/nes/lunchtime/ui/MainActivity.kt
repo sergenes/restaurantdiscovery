@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
             onPermissionDenied = locationViewModel::onPermissionDenied,
             onPermissionDismissed = locationViewModel::onPermissionDismissed,
             onRetry = locationViewModel::retry,
+            onRefreshLocation = locationViewModel::refreshLocation,
             onGoToSettings = { goToAppSettings() }
         )
     }
@@ -87,6 +88,7 @@ fun MainContentImpl(
     onPermissionDenied: () -> Unit,
     onPermissionDismissed: () -> Unit,
     onRetry: () -> Unit,
+    onRefreshLocation: () -> Unit,
     onGoToSettings: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -113,6 +115,7 @@ fun MainContentImpl(
                 composable<Home> {
                     HomeScreen(
                         location = state.location,
+                        onRefreshLocation = onRefreshLocation,
                         onSelected = { restaurant ->
                             navController.navigate(Details.fromRestaurant(restaurant))
                         }

@@ -4,14 +4,6 @@ import com.nes.lunchtime.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,19 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
-import coil.decode.DataSource
+import androidx.compose.ui.tooling.preview.Preview
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.theme.Dimens
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
@@ -67,35 +50,12 @@ fun RestaurantCard(
                 .height(Dimens.CardHeight),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(restaurant.photoUrl)
-                    .allowHardware(false)
-                    .crossfade(true)
-                    .memoryCachePolicy(CachePolicy.ENABLED)
-                    .diskCachePolicy(CachePolicy.ENABLED)
-                    .networkCachePolicy(CachePolicy.ENABLED)
-                    .build(),
-                onSuccess = { result ->
-                    val successResult = result.result
-                    when (successResult.dataSource) {
-                        DataSource.MEMORY -> println("Image loaded from memory cache")
-                        DataSource.DISK -> println("Image loaded from disk cache")
-                        DataSource.NETWORK -> println("Image loaded from network")
-                        else -> println("Image loaded from unknown source")
-                    }
-                },
-                onError = { result ->
-                    val errorResult = result.result
-                    println("Error loading image: ${errorResult.throwable}")
-                },
+            RestaurantImage(
+                photoUrl = restaurant.photoUrl,
                 contentDescription = "Photo of ${restaurant.displayName}",
-                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(Dimens.CardImageWidth),
-                placeholder = painterResource(android.R.drawable.ic_menu_gallery),
-                error = painterResource(android.R.drawable.stat_notify_error)
+                    .width(Dimens.CardImageWidth)
             )
 
             Spacer(modifier = Modifier.width(Dimens.SpacingMedium))
@@ -117,7 +77,7 @@ fun RestaurantCard(
                     Icon(
                         painter = painterResource(android.R.drawable.btn_star_big_on),
                         contentDescription = "Rating Star",
-                        tint = Color(0xFF4CAF50),
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(Dimens.IconSizeSmall)
                     )
                     Text(
@@ -138,20 +98,20 @@ fun RestaurantCard(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier.fillMaxHeight()
-
             ) {
                 IconButton(
                     modifier = Modifier
                         .height(Dimens.IconButtonHeight)
                         .width(Dimens.IconSizeButton),
-                    onClick = { onFavoriteClicked(restaurant) }) {
+                    onClick = { onFavoriteClicked(restaurant) }
+                ) {
                     Icon(
                         painter = painterResource(
                             if (isFavorite) R.mipmap.saved
                             else R.mipmap.bookmark
                         ),
                         contentDescription = "Favorite Icon",
-                        tint = Color(0xFF2C5601)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -163,7 +123,7 @@ fun RestaurantCard(
 @Composable
 fun PreviewRestaurantCard() {
     val item = Restaurant(
-        id = "id", 
+        id = "id",
         displayName = "Name Very Long Too Long to fit and more",
         formattedAddress = "123 Address St, City",
         latitude = 0.0,
@@ -188,7 +148,7 @@ fun PreviewRestaurantCard() {
 @Composable
 fun PreviewRestaurantCardFavorite() {
     val item = Restaurant(
-        id = "id", 
+        id = "id",
         displayName = "Italian Bistro",
         formattedAddress = "456 Pasta Ave, City",
         latitude = 0.0,

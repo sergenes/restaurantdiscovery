@@ -94,4 +94,8 @@ class LocationViewModel @Inject constructor(
     fun retry() {
         checkLocationPermission()
     }
+
+    fun refreshLocation() {
+        fetchLocation()
+    }
 }
