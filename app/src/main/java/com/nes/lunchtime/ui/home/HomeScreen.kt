@@ -129,7 +129,8 @@ private fun HomeScreenContent(
         nearbyState = nearbyState,
         searchState = searchState,
         onQueryChange = { newQuery ->
-            searchViewModel.onSearchQueryChanged(newQuery.text)
+            query = newQuery
+            searchViewModel.onSearchQueryChanged(query.text)
         },
         onSearch = {
             // Read location imperatively — avoids collectAsState() here which would
