@@ -11,7 +11,7 @@ import coil.request.ImageRequest
 
 @Composable
 fun RestaurantImage(
-    photoUrl: String,
+    photoUrl: String?,
     contentDescription: String,
     modifier: Modifier = Modifier
 ) {
