@@ -6,7 +6,7 @@
 [![Latest Tag](https://img.shields.io/github/v/tag/sergenes/restaurantdiscovery?label=Version&color=orange)](https://github.com/sergenes/restaurantdiscovery/tags)
 
 
-Lunchtime Restaurant Discovery: An Android App That Demonstrates Best Practices
+Lunchtime: A Restaurant Discovery App Showcasing Android Best Practices (Playground)
 
 ## Brief Project Description
 
@@ -29,7 +29,7 @@ implemented as a Kotlin Jetpack Compose project.
 ## Build Instruction
 
 For security best practices, sensitive information such as the Google Places API key is stored in
-`local.properties` (referenced via `BuildConfig`) and excluded from GitHub. 
+`local.properties` (referenced via `BuildConfig`) and excluded from GitHub.
 
 ### How to obtain the API key:
 1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
@@ -61,6 +61,8 @@ The project includes comprehensive test coverage focusing on meaningful tests ra
 - `BaseViewModelTest` - Shared loading/error handling utilities
 - `FavoritesViewModelTest` - Toggle favorites logic
 - `DestinationsTest` - Navigation serialization
+- `LocationViewModelTest` - Location update flow and refresh behavior
+- `LocationPermissionViewModelTest` - Permission state machine and callbacks
 
 **Android Instrumentation Tests** (Requires device/emulator):
 ```bash
@@ -85,20 +87,29 @@ The project includes comprehensive test coverage focusing on meaningful tests ra
 - **BaseViewModel Pattern**: Eliminates code duplication with shared `executeWithLoading` helper for consistent loading/error handling
 - **Centralized Design System**: `Dimens.kt` for consistent spacing and eliminating magic numbers
 - **Search Debouncing**: 500ms debounce to reduce API calls while user types
-
-
-
+- **Scoped ViewModel Separation**: Permission and location concerns are split into two focused ViewModels with different lifetimes:
+    - `LocationPermissionViewModel` (Activity-scoped) — owns the permission state machine; `MainActivity` only recomposes when permission state changes (grant/deny), which is rare
+    - `LocationViewModel` (HomeScreen-scoped) — owns continuous GPS updates; starts immediately on composition since permission is already guaranteed by the time `HomeScreen` is shown
+- **Compose Recomposition Scoping**: Location ticks only recompose the composables that actually consume location:
+    - `HomeScreenLayout` is a pure layout composable with a `restaurantContent` slot — it has no location parameter and is unaffected by GPS updates
+    - `RestaurantContent` collects `locationState` directly from `LocationViewModel`; only the map pin position (`RestaurantMapView`) redraws on each tick — the list, search bar, and scaffold are skipped by Compose
+    - `currentViewType` (list vs. map) is hoisted to `HomeScreenContent` with `rememberSaveable`, preserving the user's view choice across NearBy loading cycles and location refreshes
+- **Fresh GPS on Every Session**: `LocationRepository` uses `getCurrentLocation()` (not `lastLocation`) as the initial emission, avoiding the stale OS-level cache that persists across app restarts
 
 
 ```mermaid
 graph TD
     subgraph Presentation_Layer
-        MA[MainActivity] --> NavHost[NavHost / Type-Safe Routes]
+        MA[MainActivity] --> PVM[LocationPermissionViewModel]
+        PVM -- Granted --> NavHost[NavHost / Type-Safe Routes]
+        PVM -- Loading/Denied/Error --> PermUI[Permission & Error UI]
         NavHost --> HS[HomeScreen]
         NavHost --> DS[DetailsScreen]
+        HS --> LVM[LocationViewModel]
         HS --> VM1[NearByViewModel]
         HS --> VM2[SearchViewModel]
         DS --> VM3[DetailsViewModel]
+        LVM --> LR[LocationRepository]
     end
 
     subgraph Domain_Layer
@@ -112,9 +123,11 @@ graph TD
         RepoImpl[RestaurantsRepositoryImpl] -. implements .-> Repo
         RepoImpl --> GPC[GooglePlacesClient]
         GPC --> Ktor[Ktor HTTP Client]
-        
+
         FavRepo[FavoritesRepository] --> FDS[FavoritesDataSource]
         FDS --> DS_Prefs[DataStore Preferences]
+
+        LR --> FLP[FusedLocationProviderClient]
     end
 ```
 
@@ -123,9 +136,9 @@ graph TD
 - UI:
     - Jetpack Compose for declarative UI
     - Material Design 3 components
-    - Google Maps Compose 
+    - Google Maps Compose
 - Networking:
-    - [Ktor Client](https://ktor.io/docs/client-create-and-configure.html#configure-client) for HTTP requests 
+    - [Ktor Client](https://ktor.io/docs/client-create-and-configure.html#configure-client) for HTTP requests
       - Native coroutines support
       - Lightweight and flexible compared to Retrofit
       - Easy configuration and interceptors
@@ -201,6 +214,8 @@ The app follows Clean Architecture principles, splitting the codebase into three
 - Domain Layer, where all the business logic lives in reusable use cases.
 - Presentation Layer, built with Jetpack Compose and MVVM, which keeps the UI reactive and maintainable.
 - For state management, StateFlow is used with a unidirectional data flow, which simplifies updates and keeps things predictable. Errors are managed using a Result wrapper, and sealed classes help define clear UI states.
+
+Location handling is split into two focused ViewModels. `LocationPermissionViewModel` lives at the Activity scope and manages the permission lifecycle — the Activity only recomposes when permission state actually changes, which is rare. Once permission is granted, `LocationViewModel` takes over at the HomeScreen scope and drives continuous GPS updates via a `callbackFlow`-wrapped `FusedLocationProviderClient`. Each GPS tick only recomposes `RestaurantContent` (where the map pin lives), leaving the scaffold, search bar, and restaurant list untouched.
 
 The tech stack includes:
 
