@@ -97,38 +97,39 @@ The project includes comprehensive test coverage focusing on meaningful tests ra
 - **Fresh GPS on Every Session**: `LocationRepository` uses `getCurrentLocation()` (not `lastLocation`) as the initial emission, avoiding the stale OS-level cache that persists across app restarts
 
 
+**1. Navigation & Permission Flow**
 ```mermaid
 graph TD
-    subgraph Presentation_Layer
-        MA[MainActivity] --> PVM[LocationPermissionViewModel]
-        PVM -- Granted --> NavHost[NavHost / Type-Safe Routes]
-        PVM -- Loading/Denied/Error --> PermUI[Permission & Error UI]
-        NavHost --> HS[HomeScreen]
-        NavHost --> DS[DetailsScreen]
-        HS --> LVM[LocationViewModel]
-        HS --> VM1[NearByViewModel]
-        HS --> VM2[SearchViewModel]
-        DS --> VM3[DetailsViewModel]
-        LVM --> LR[LocationRepository]
-    end
+    MA[MainActivity] --> PVM[LocationPermissionViewModel]
+    PVM -- Granted --> NavHost[NavHost / Type-Safe Routes]
+    PVM -- Loading/Denied/Error --> PermUI[Permission & Error UI]
+    NavHost --> HS[HomeScreen]
+    NavHost --> DS[DetailsScreen]
+```
 
-    subgraph Domain_Layer
-        VM1 & VM2 --> UC[GetRestaurantsUseCase]
-        VM3 --> Repo
-        UC --> Repo[RestaurantsRepository Interface]
-        Repo --> Model[Restaurant / PlaceDetails Models]
-    end
+**2. Presentation → Domain**
+```mermaid
+graph TD
+    HS[HomeScreen] --> LVM[LocationViewModel]
+    HS --> VM1[NearByViewModel]
+    HS --> VM2[SearchViewModel]
+    DS[DetailsScreen] --> VM3[DetailsViewModel]
 
-    subgraph Data_Layer
-        RepoImpl[RestaurantsRepositoryImpl] -. implements .-> Repo
-        RepoImpl --> GPC[GooglePlacesClient]
-        GPC --> Ktor[Ktor HTTP Client]
+    VM1 & VM2 --> UC[GetRestaurantsUseCase]
+    UC --> Repo[RestaurantsRepository Interface]
+    VM3 --> Repo
+    Repo --> Model[Restaurant / PlaceDetails Models]
+```
 
-        FavRepo[FavoritesRepository] --> FDS[FavoritesDataSource]
-        FDS --> DS_Prefs[DataStore Preferences]
+**3. Data Layer**
+```mermaid
+graph TD
+    Repo[RestaurantsRepository Interface] -. impl .-> RepoImpl[RestaurantsRepositoryImpl]
+    RepoImpl --> GPC[GooglePlacesClient] --> Ktor[Ktor HTTP Client]
 
-        LR --> FLP[FusedLocationProviderClient]
-    end
+    FavRepo[FavoritesRepository] --> FDS[FavoritesDataSource] --> DS_Prefs[DataStore Preferences]
+
+    LVM[LocationViewModel] --> LR[LocationRepository] --> FLP[FusedLocationProviderClient]
 ```
 
 ## Key Technologies & Libraries
