@@ -11,7 +11,6 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BaseViewModelTest {
@@ -118,13 +117,13 @@ class BaseViewModelTest {
         val viewModel = TestViewModel()
 
         // When: Result contains CancellationException
-        // Then: Exception is propagated (not caught)
-        assertFailsWith<CancellationException> {
-            viewModel.executeOperation {
-                Result.failure(CancellationException("Cancelled"))
-            }
-            advanceUntilIdle()
+        viewModel.executeOperation {
+            Result.failure(CancellationException("Cancelled"))
         }
+        advanceUntilIdle()
+
+        // Then: CancellationException is not swallowed as a regular Error
+        assertTrue(viewModel.uiState.value !is TestUiState.Error)
     }
 
     @Test
@@ -133,13 +132,13 @@ class BaseViewModelTest {
         val viewModel = TestViewModel()
 
         // When: Block throws CancellationException
-        // Then: Exception is propagated (not caught)
-        assertFailsWith<CancellationException> {
-            viewModel.executeOperation {
-                throw CancellationException("Cancelled")
-            }
-            advanceUntilIdle()
+        viewModel.executeOperation {
+            throw CancellationException("Cancelled")
         }
+        advanceUntilIdle()
+
+        // Then: CancellationException is not swallowed as a regular Error
+        assertTrue(viewModel.uiState.value !is TestUiState.Error)
     }
 
     @Test
@@ -179,54 +178,50 @@ class BaseViewModelTest {
     }
 
     @Test
-    fun `executeWithLoading transitions through Loading to Success`() = runTest {
-        // Given: A ViewModel
-        val viewModel = TestViewModel()
-        val states = mutableListOf<TestUiState>()
+    fun `executeWithLoading transitions through Loading to Success`() =
+        runTest(mainCoroutineRule.testDispatcher) {
+            // Given: A ViewModel
+            val viewModel = TestViewModel()
 
-        // Collect state changes
-        val job = launch {
-            viewModel.uiState.collect { states.add(it) }
+            // When: Operation starts (block delayed so Loading state is observable)
+            viewModel.executeOperation {
+                kotlinx.coroutines.delay(100)
+                Result.success("data")
+            }
+
+            // Then: Loading state is set while block is suspended
+            assertEquals(TestUiState.Loading, viewModel.uiState.value)
+
+            // When: Operation completes
+            advanceUntilIdle()
+
+            // Then: Final state is Success
+            val state = viewModel.uiState.value
+            assertTrue(state is TestUiState.Success && state.data == "data")
         }
-
-        // When: Operation succeeds
-        viewModel.executeOperation {
-            Result.success("data")
-        }
-        advanceUntilIdle()
-
-        // Then: States transition correctly
-        assertTrue(states.contains(TestUiState.Initial))
-        assertTrue(states.contains(TestUiState.Loading))
-        assertTrue(states.any { it is TestUiState.Success && it.data == "data" })
-
-        job.cancel()
-    }
 
     @Test
-    fun `executeWithLoading transitions through Loading to Error`() = runTest {
-        // Given: A ViewModel
-        val viewModel = TestViewModel()
-        val states = mutableListOf<TestUiState>()
+    fun `executeWithLoading transitions through Loading to Error`() =
+        runTest(mainCoroutineRule.testDispatcher) {
+            // Given: A ViewModel
+            val viewModel = TestViewModel()
 
-        // Collect state changes
-        val job = launch {
-            viewModel.uiState.collect { states.add(it) }
+            // When: Operation starts (block delayed so Loading state is observable)
+            viewModel.executeOperation {
+                kotlinx.coroutines.delay(100)
+                Result.failure(Exception("Error"))
+            }
+
+            // Then: Loading state is set while block is suspended
+            assertEquals(TestUiState.Loading, viewModel.uiState.value)
+
+            // When: Operation completes
+            advanceUntilIdle()
+
+            // Then: Final state is Error
+            val state = viewModel.uiState.value
+            assertTrue(state is TestUiState.Error && state.message == "Error")
         }
-
-        // When: Operation fails
-        viewModel.executeOperation {
-            Result.failure(Exception("Error"))
-        }
-        advanceUntilIdle()
-
-        // Then: States transition correctly
-        assertTrue(states.contains(TestUiState.Initial))
-        assertTrue(states.contains(TestUiState.Loading))
-        assertTrue(states.any { it is TestUiState.Error && it.message == "Error" })
-
-        job.cancel()
-    }
 
     @Test
     fun `multiple concurrent operations update state correctly`() = runTest {

@@ -129,7 +129,6 @@ private fun HomeScreenContent(
         nearbyState = nearbyState,
         searchState = searchState,
         onQueryChange = { newQuery ->
-            query = newQuery
             searchViewModel.onSearchQueryChanged(newQuery.text)
         },
         onSearch = {
@@ -485,5 +484,4 @@ private val sampleRestaurants = listOf(
     )
 )
 
-private val sampleLocation = LatLng(37.7749, -122.4194)
 private val sampleFavorites = listOf("1")
