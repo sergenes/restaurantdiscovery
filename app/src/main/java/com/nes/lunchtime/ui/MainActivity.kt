@@ -35,7 +35,7 @@ import com.nes.lunchtime.ui.details.DetailsScreen
 import com.nes.lunchtime.ui.home.HomeScreen
 import com.nes.lunchtime.ui.location.LocationPermissionDeniedDialog
 import com.nes.lunchtime.ui.location.LocationPermissionDialog
-import com.nes.lunchtime.ui.location.LocationViewModel
+import com.nes.lunchtime.ui.location.LocationPermissionViewModel
 import com.nes.lunchtime.ui.navigation.Details
 import com.nes.lunchtime.ui.navigation.Home
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
@@ -45,29 +45,28 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val locationViewModel by viewModels<LocationViewModel>()
+    private val locationPermissionViewModel by viewModels<LocationPermissionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             LunchtimeTheme {
-                MainContent(locationViewModel = locationViewModel)
+                MainContent(locationPermissionViewModel = locationPermissionViewModel)
             }
         }
     }
 
     @Composable
-    private fun MainContent(locationViewModel: LocationViewModel) {
-        val locationState by locationViewModel.locationState.collectAsState()
-        
+    private fun MainContent(locationPermissionViewModel: LocationPermissionViewModel) {
+        val permissionState by locationPermissionViewModel.state.collectAsState()
+
         MainContentImpl(
-            locationState = locationState,
-            onPermissionGranted = locationViewModel::onPermissionGranted,
-            onPermissionDenied = locationViewModel::onPermissionDenied,
-            onPermissionDismissed = locationViewModel::onPermissionDismissed,
-            onRetry = locationViewModel::retry,
-            onRefreshLocation = locationViewModel::refreshLocation,
+            permissionState = permissionState,
+            onPermissionGranted = locationPermissionViewModel::onPermissionGranted,
+            onPermissionDenied = locationPermissionViewModel::onPermissionDenied,
+            onPermissionDismissed = locationPermissionViewModel::onPermissionDismissed,
+            onRetry = locationPermissionViewModel::retry,
             onGoToSettings = { goToAppSettings() }
         )
     }
@@ -83,26 +82,24 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContentImpl(
-    locationState: LocationViewModel.LocationState,
+    permissionState: LocationPermissionViewModel.PermissionState,
     onPermissionGranted: () -> Unit,
     onPermissionDenied: () -> Unit,
     onPermissionDismissed: () -> Unit,
     onRetry: () -> Unit,
-    onRefreshLocation: () -> Unit,
     onGoToSettings: () -> Unit
 ) {
     val navController = rememberNavController()
 
-    // Handle location state changes
-    when (val state = locationState) {
-        is LocationViewModel.LocationState.PermissionRequired -> {
+    when (permissionState) {
+        is LocationPermissionViewModel.PermissionState.PermissionRequired -> {
             LocationPermissionDialog(
                 onGranted = onPermissionGranted,
                 onDenied = onPermissionDenied
             )
         }
 
-        is LocationViewModel.LocationState.PermissionDenied -> {
+        is LocationPermissionViewModel.PermissionState.PermissionDenied -> {
             LocationPermissionDeniedDialog(
                 onGranted = onPermissionGranted,
                 onDismiss = onPermissionDismissed,
@@ -110,12 +107,10 @@ fun MainContentImpl(
             )
         }
 
-        is LocationViewModel.LocationState.LocationAvailable -> {
+        is LocationPermissionViewModel.PermissionState.Granted -> {
             NavHost(navController, startDestination = Home) {
                 composable<Home> {
                     HomeScreen(
-                        location = state.location,
-                        onRefreshLocation = onRefreshLocation,
                         onSelected = { restaurant ->
                             navController.navigate(Details.fromRestaurant(restaurant))
                         }
@@ -131,14 +126,14 @@ fun MainContentImpl(
             }
         }
 
-        is LocationViewModel.LocationState.Error -> {
+        is LocationPermissionViewModel.PermissionState.Error -> {
             ErrorScreen(
-                message = state.message,
+                message = permissionState.message,
                 onRetry = onRetry
             )
         }
 
-        LocationViewModel.LocationState.Loading -> {
+        LocationPermissionViewModel.PermissionState.Loading -> {
             LoadingScreen()
         }
     }

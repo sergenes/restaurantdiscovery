@@ -3,7 +3,9 @@
     "allow": [
       "Bash(./gradlew :app:testDebugUnitTest:*)",
       "Bash(git stash:*)",
-      "Bash(./gradlew :app:compileDebugKotlin:*)"
+      "Bash(./gradlew :app:compileDebugKotlin:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(./gradlew testDebugUnitTest:*)"
     ]
   }
 }
