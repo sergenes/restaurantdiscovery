@@ -1,7 +1,7 @@
 package com.nes.lunchtime.ui.location
 
 import com.nes.lunchtime.MainCoroutineRule
-import com.nes.lunchtime.location.LocationPermissionManager
+import com.nes.lunchtime.data.location.LocationPermissionManager
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk

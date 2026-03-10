@@ -2,7 +2,7 @@ package com.nes.lunchtime.ui.location
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nes.lunchtime.location.LocationRepository
+import com.nes.lunchtime.data.location.LocationRepository
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

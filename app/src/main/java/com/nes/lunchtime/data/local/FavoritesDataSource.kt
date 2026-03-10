@@ -1,4 +1,4 @@
-package com.nes.lunchtime.data.favorites
+package com.nes.lunchtime.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

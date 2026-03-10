@@ -1,4 +1,4 @@
-package com.nes.lunchtime.location
+package com.nes.lunchtime.data.location
 
 import android.Manifest
 import android.content.Context

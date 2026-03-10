@@ -2,7 +2,7 @@ package com.nes.lunchtime.ui.location
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nes.lunchtime.location.LocationPermissionManager
+import com.nes.lunchtime.data.location.LocationPermissionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

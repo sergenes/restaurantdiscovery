@@ -11,13 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
-import com.nes.lunchtime.net.model.ReviewDetails
-import com.nes.lunchtime.net.model.ReviewText
+import com.nes.lunchtime.data.remote.model.ReviewDetails
+import com.nes.lunchtime.data.remote.model.ReviewText
 import com.nes.lunchtime.ui.components.IndeterminateCircularIndicator
 import com.nes.lunchtime.ui.home.ErrorView
 import com.nes.lunchtime.ui.theme.Dimens

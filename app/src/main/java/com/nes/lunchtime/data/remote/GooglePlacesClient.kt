@@ -1,17 +1,16 @@
-package com.nes.lunchtime.net
+package com.nes.lunchtime.data.remote
 
-
+import com.nes.lunchtime.data.location.LocationUtils
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
-import com.nes.lunchtime.location.LocationUtils
-import com.nes.lunchtime.net.model.Center
-import com.nes.lunchtime.net.model.Circle
-import com.nes.lunchtime.net.model.LocationRestriction
-import com.nes.lunchtime.net.model.NearbySearchRequest
-import com.nes.lunchtime.net.model.NearbySearchResponse
-import com.nes.lunchtime.net.model.Photo
-import com.nes.lunchtime.net.model.PlaceDetailsResponse
-import com.nes.lunchtime.net.model.TextSearchRequest
+import com.nes.lunchtime.data.remote.model.Center
+import com.nes.lunchtime.data.remote.model.Circle
+import com.nes.lunchtime.data.remote.model.LocationRestriction
+import com.nes.lunchtime.data.remote.model.NearbySearchRequest
+import com.nes.lunchtime.data.remote.model.NearbySearchResponse
+import com.nes.lunchtime.data.remote.model.Photo
+import com.nes.lunchtime.data.remote.model.PlaceDetailsResponse
+import com.nes.lunchtime.data.remote.model.TextSearchRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -22,9 +21,8 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.path
 import javax.inject.Inject
-import javax.inject.Singleton
 import javax.inject.Named
-
+import javax.inject.Singleton
 
 @Singleton
 class GooglePlacesClient @Inject constructor(
@@ -33,10 +31,10 @@ class GooglePlacesClient @Inject constructor(
 ) {
     companion object {
         private const val BASE_URL = "https://places.googleapis.com"
-        
+
         private const val SEARCH_FIELD_MASK = "places.id,places.displayName,places.formattedAddress," +
                 "places.location,places.rating,places.userRatingCount,places.photos"
-        
+
         private const val DETAILS_FIELD_MASK = "id,displayName,formattedAddress,location,rating," +
                 "userRatingCount,reviews"
     }
@@ -50,7 +48,7 @@ class GooglePlacesClient @Inject constructor(
      * @param longitude The longitude of the location.
      * @param maxResultCount The maximum number of results to return.
      * @param radius The radius in meters.
-     * @return A list of [Restaurant] objects.
+     * @return A list of [com.nes.lunchtime.domain.Restaurant] objects.
      */
     suspend fun getNearbyRestaurants(
         latitude: Double,
@@ -59,7 +57,7 @@ class GooglePlacesClient @Inject constructor(
         radius: Int = 5000
     ): List<Restaurant> {
         val url = URLBuilder(BASE_URL).apply {
-            protocol = URLProtocol.HTTPS
+            protocol = URLProtocol.Companion.HTTPS
             path("/v1/places:searchNearby")
         }.build()
         val response: NearbySearchResponse = client.post(url) {
@@ -110,11 +108,11 @@ class GooglePlacesClient @Inject constructor(
      * https://developers.google.com/maps/documentation/places/web-service/place-details
      *
      * @param placeId The ID of the place.
-     * @return A [PlaceDetails] object.
+     * @return A [com.nes.lunchtime.domain.PlaceDetails] object.
      */
     suspend fun getPlaceDetails(placeId: String): PlaceDetails {
         val url = URLBuilder(BASE_URL).apply {
-            protocol = URLProtocol.HTTPS
+            protocol = URLProtocol.Companion.HTTPS
             path("/v1/places/$placeId")
         }.build()
 
@@ -154,7 +152,7 @@ class GooglePlacesClient @Inject constructor(
         radius: Int = 5000
     ): List<Restaurant> {
         val url = URLBuilder(BASE_URL).apply {
-            protocol = URLProtocol.HTTPS
+            protocol = URLProtocol.Companion.HTTPS
             path("/v1/places:searchText")
         }.build()
         val response: NearbySearchResponse = client.post(url) {

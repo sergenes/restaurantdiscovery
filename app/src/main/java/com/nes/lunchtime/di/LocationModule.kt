@@ -1,8 +1,8 @@
 package com.nes.lunchtime.di
 
 import android.content.Context
-import com.nes.lunchtime.location.LocationPermissionManager
-import com.nes.lunchtime.location.LocationRepository
+import com.nes.lunchtime.data.location.LocationPermissionManager
+import com.nes.lunchtime.data.location.LocationRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module

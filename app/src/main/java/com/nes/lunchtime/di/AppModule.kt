@@ -1,7 +1,7 @@
 package com.nes.lunchtime.di
 
-import com.nes.lunchtime.repo.RestaurantsRepository
-import com.nes.lunchtime.repo.RestaurantsRepositoryImpl
+import com.nes.lunchtime.data.repository.RestaurantsRepository
+import com.nes.lunchtime.data.repository.RestaurantsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

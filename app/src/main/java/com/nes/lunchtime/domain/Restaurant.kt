@@ -1,6 +1,6 @@
 package com.nes.lunchtime.domain
 
-import com.nes.lunchtime.net.model.ReviewDetails
+import com.nes.lunchtime.data.remote.model.ReviewDetails
 
 data class Restaurant(
     val id: String = "",

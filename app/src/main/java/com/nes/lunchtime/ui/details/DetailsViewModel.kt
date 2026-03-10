@@ -1,7 +1,7 @@
 package com.nes.lunchtime.ui.details
 
 import com.nes.lunchtime.domain.PlaceDetails
-import com.nes.lunchtime.repo.RestaurantsRepository
+import com.nes.lunchtime.data.repository.RestaurantsRepository
 import com.nes.lunchtime.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,9 +1,9 @@
-package com.nes.lunchtime.repo
+package com.nes.lunchtime.data.repository
 
 import android.util.Log
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
-import com.nes.lunchtime.net.GooglePlacesClient
+import com.nes.lunchtime.data.remote.GooglePlacesClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject

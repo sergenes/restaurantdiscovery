@@ -1,4 +1,4 @@
-package com.nes.lunchtime.net.model
+package com.nes.lunchtime.data.remote.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

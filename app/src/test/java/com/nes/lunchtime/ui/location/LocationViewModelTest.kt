@@ -2,9 +2,8 @@ package com.nes.lunchtime.ui.location
 
 import com.google.android.gms.maps.model.LatLng
 import com.nes.lunchtime.MainCoroutineRule
-import com.nes.lunchtime.location.LocationRepository
+import com.nes.lunchtime.data.location.LocationRepository
 import io.mockk.every
-import io.mockk.verify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow

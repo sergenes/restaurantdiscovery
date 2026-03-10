@@ -1,7 +1,7 @@
 package com.nes.lunchtime.domain
 
 import com.google.android.gms.maps.model.LatLng
-import com.nes.lunchtime.repo.RestaurantsRepository
+import com.nes.lunchtime.data.repository.RestaurantsRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

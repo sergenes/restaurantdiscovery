@@ -2,7 +2,7 @@ package com.nes.lunchtime.ui.home.favorites
 
 
 import com.nes.lunchtime.MainCoroutineRule
-import com.nes.lunchtime.data.favorites.FavoritesRepository
+import com.nes.lunchtime.data.local.FavoritesRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

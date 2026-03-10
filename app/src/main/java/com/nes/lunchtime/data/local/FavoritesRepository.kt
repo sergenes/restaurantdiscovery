@@ -1,4 +1,4 @@
-package com.nes.lunchtime.data.favorites
+package com.nes.lunchtime.data.local
 
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
