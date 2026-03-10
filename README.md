@@ -205,7 +205,7 @@ graph TD
 
 At its core, this app uses the Google Places API to fetch and display nearby restaurants based on the user's location.
 
-When you launch the app, it starts by asking for location permission in a user-friendly way, explaining why it's needed. Once permission is granted, the app fetches nearby restaurants and displays them. There's also a real-time search feature, so users can find specific places, and they can switch between a list view and a map view, with pins placed on the map using Google Maps Compose.
+When you launch the app, it starts by asking for location permission in a user-friendly way, explaining why it's needed. Once permission is granted, the app fetches nearby restaurants and displays them. There's also a real-time search feature, so users can find specific places, and they can switch between a list view and a map view, with pins placed on the map.
 
 Selecting a restaurant brings up basic details like name, address, and ratings. A cool bonus: users can favorite restaurants, and that status is saved.
 

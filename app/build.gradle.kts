@@ -5,10 +5,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
     alias(libs.plugins.kotlinSerialization)
-    kotlin("kapt")
     alias(libs.plugins.hiltAndroid)
+    kotlin("kapt")
 }
 
 // Load local.properties manually
@@ -18,22 +17,20 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 val googleApiKey: String = localProperties.getProperty("google.places.api.key") ?: ""
-//println("DEBUG: googleApiKey is: $googleApiKey")
 
 android {
     namespace = "com.nes.lunchtime"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.nes.lunchtime"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-        // Add the manifest placeholder here so it's available for all build types
         manifestPlaceholders["googleApiKey"] = googleApiKey
     }
 
@@ -63,6 +60,10 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(libs.androidx.multidex)
     implementation(libs.androidx.core.ktx)
@@ -83,16 +84,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // material icons
     implementation(libs.androidx.compose.material.icons.extended)
-
-    // Map
     implementation(libs.google.maps.compose)
-
-    // FusedLocationProvider
     implementation(libs.google.places)
-
-    // serialization
     implementation(libs.kotlinx.serialization.json)
 
     // Hilt
@@ -112,14 +106,10 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.compose)
 
-    // Load images
     implementation(libs.coil.compose)
-
-    // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)
 
-    // Unit tests support
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlin.test)
