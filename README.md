@@ -70,6 +70,80 @@ The project includes comprehensive test coverage focusing on meaningful tests ra
 ```
 - `FavoritesDataSourceTest` - Real DataStore persistence and concurrent operations
 
+## Project Structure
+
+```
+com.nes.lunchtime/
+├── app/
+│   └── LunchTimeApp.kt                        # Hilt Application class
+│
+├── domain/                                    # Pure Kotlin — no Android imports
+│   ├── Restaurant.kt                          # Domain models (Restaurant, PlaceDetails)
+│   ├── RestaurantsRepository.kt               # Repository interface (contract)
+│   └── GetRestaurantsUseCase.kt               # Business logic: fetch & sort by distance
+│
+├── data/                                      # All data sources & implementations
+│   ├── remote/
+│   │   ├── GooglePlacesClient.kt              # Ktor HTTP client for Places API
+│   │   └── model/
+│   │       ├── Request.kt                     # API request payloads
+│   │       └── Response.kt                    # API response models
+│   ├── local/
+│   │   ├── FavoritesDataSource.kt             # DataStore read/write
+│   │   └── FavoritesRepository.kt             # Favorites data access
+│   ├── repository/
+│   │   └── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
+│   └── location/
+│       ├── LocationRepository.kt              # GPS state via FusedLocationProvider
+│       ├── LocationPermissionManager.kt       # Runtime permission helpers
+│       └── LocationUtils.kt                   # Distance calculation utilities
+│
+├── ui/                                        # Presentation layer (Compose + MVVM)
+│   ├── MainActivity.kt
+│   ├── base/
+│   │   └── BaseViewModel.kt                   # Shared executeWithLoading helper
+│   ├── components/                            # Reusable composables
+│   │   ├── BrandedAppHeader.kt
+│   │   ├── RestaurantCard.kt
+│   │   ├── RestaurantImage.kt
+│   │   ├── CircularIndicator.kt
+│   │   └── ViewSwitcherButton.kt
+│   ├── home/
+│   │   ├── HomeScreen.kt
+│   │   ├── nearby/NearByViewModel.kt          # SharedFlow + transformLatest pattern
+│   │   ├── search/SearchViewModel.kt          # 500ms debounce
+│   │   ├── favorites/FavoritesViewModel.kt
+│   │   ├── list/RestaurantListView.kt
+│   │   └── map/RestaurantMapView.kt
+│   ├── details/
+│   │   ├── DetailsScreen.kt
+│   │   └── DetailsViewModel.kt
+│   ├── location/
+│   │   ├── LocationPermissionDialog.kt
+│   │   ├── LocationPermissionViewModel.kt     # Activity-scoped, permission state machine
+│   │   └── LocationViewModel.kt               # HomeScreen-scoped, continuous GPS updates
+│   ├── navigation/
+│   │   └── Destinations.kt                    # Type-safe nav routes (Kotlin Serialization)
+│   └── theme/
+│       ├── Color.kt
+│       ├── Type.kt
+│       ├── Dimens.kt
+│       └── Theme.kt
+│
+└── di/                                        # Hilt modules
+    ├── AppModule.kt                           # Binds RestaurantsRepository interface → impl
+    ├── NetworkModule.kt                       # HttpClient (Ktor)
+    ├── LocationModule.kt                      # FusedLocationProviderClient
+    ├── DataStoreModule.kt                     # DataStore preferences
+    └── ApiKeyModule.kt                        # API key from BuildConfig
+```
+
+**Layer dependency rules:**
+- `domain` has zero dependencies on `data` or `ui`
+- `data` depends on `domain` (implements its repository interfaces)
+- `ui` depends on `domain` (use cases, models) but never on `data` directly
+- `di` wires everything together at app startup
+
 ## Architecture & Design Patterns
 
 - **Clean Architecture** with clear separation of concerns:
