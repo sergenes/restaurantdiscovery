@@ -1,6 +1,6 @@
 package com.nes.lunchtime.di
 
-import com.nes.lunchtime.data.repository.RestaurantsRepository
+import com.nes.lunchtime.domain.RestaurantsRepository
 import com.nes.lunchtime.data.repository.RestaurantsRepositoryImpl
 import dagger.Binds
 import dagger.Module

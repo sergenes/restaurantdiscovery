@@ -3,27 +3,11 @@ package com.nes.lunchtime.data.repository
 import android.util.Log
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
+import com.nes.lunchtime.domain.RestaurantsRepository
 import com.nes.lunchtime.data.remote.GooglePlacesClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
-
-interface RestaurantsRepository {
-    suspend fun getNearByRestaurants(
-        location: LatLng,
-        radius: Int = 5000 //5Km
-    ): Result<List<Restaurant>>
-
-    suspend fun getPlaceDetails(
-        id: String
-    ): Result<PlaceDetails>
-
-    suspend fun getRestaurantsByText(
-        searchText: String,
-        location: LatLng,
-        radius: Int = 5000 //5Km
-    ): Result<List<Restaurant>>
-}
 
 class RestaurantsRepositoryImpl @Inject constructor(
     private val client: GooglePlacesClient
