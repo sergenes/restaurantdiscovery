@@ -13,6 +13,8 @@ activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 
 mapsCompose = "6.2.1"
+playServicesMaps = "18.2.0"
+playServicesLocation = "21.3.0"
 mockk = "1.13.9"
 multidex = "2.0.1"
 places = "4.1.0"
@@ -46,6 +48,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
 google-places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationFragmentKtx" }
@@ -73,6 +78,7 @@ androidx-navigation-testing = { group = "androidx.navigation", name = "navigatio
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
