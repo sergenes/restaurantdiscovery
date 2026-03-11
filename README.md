@@ -181,6 +181,8 @@ graph TD
     NavHost --> DS[DetailsScreen]
 ```
 
+---
+
 **2. Architecture Overview**
 ```mermaid
 graph TB
@@ -244,6 +246,8 @@ graph TB
     style DataSources fill:#e8f5e9
     style External fill:#ffebee
 ```
+
+---
 
 ## Key Technologies & Libraries
 
