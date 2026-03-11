@@ -40,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.Restaurant
@@ -57,8 +56,6 @@ import com.nes.lunchtime.ui.home.search.SearchViewModel
 import com.nes.lunchtime.ui.location.LocationViewModel
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
 import com.nes.lunchtime.ui.theme.Dimens
-import com.google.android.gms.maps.model.LatLng
-
 
 sealed class ViewType(
     val title: String,
