@@ -84,6 +84,7 @@ com.nes.lunchtime/
 │
 ├── data/                                      # All data sources & implementations
 │   ├── remote/
+│   │   ├── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
 │   │   ├── GooglePlacesClient.kt              # Ktor HTTP client for Places API
 │   │   └── model/
 │   │       ├── Request.kt                     # API request payloads
@@ -91,8 +92,6 @@ com.nes.lunchtime/
 │   ├── local/
 │   │   ├── FavoritesDataSource.kt             # DataStore read/write
 │   │   └── FavoritesRepository.kt             # Favorites data access
-│   ├── repository/
-│   │   └── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
 │   └── location/
 │       ├── LocationRepository.kt              # GPS state via FusedLocationProvider
 │       ├── LocationPermissionManager.kt       # Runtime permission helpers
