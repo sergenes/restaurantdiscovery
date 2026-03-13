@@ -84,6 +84,7 @@ com.nes.lunchtime/
 │
 ├── data/                                      # All data sources & implementations
 │   ├── remote/
+│   │   ├── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
 │   │   ├── GooglePlacesClient.kt              # Ktor HTTP client for Places API
 │   │   └── model/
 │   │       ├── Request.kt                     # API request payloads
@@ -91,8 +92,6 @@ com.nes.lunchtime/
 │   ├── local/
 │   │   ├── FavoritesDataSource.kt             # DataStore read/write
 │   │   └── FavoritesRepository.kt             # Favorites data access
-│   ├── repository/
-│   │   └── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
 │   └── location/
 │       ├── LocationRepository.kt              # GPS state via FusedLocationProvider
 │       ├── LocationPermissionManager.kt       # Runtime permission helpers
@@ -181,30 +180,73 @@ graph TD
     NavHost --> DS[DetailsScreen]
 ```
 
-**2. Presentation → Domain**
-```mermaid
-graph TD
-    HS[HomeScreen] --> LVM[LocationViewModel]
-    HS --> VM1[NearByViewModel]
-    HS --> VM2[SearchViewModel]
-    DS[DetailsScreen] --> VM3[DetailsViewModel]
+---
 
-    VM1 & VM2 --> UC[GetRestaurantsUseCase]
-    UC --> Repo[RestaurantsRepository Interface]
-    VM3 --> Repo
-    Repo --> Model[Restaurant / PlaceDetails Models]
+**2. Architecture Overview**
+```mermaid
+graph TB
+    subgraph Presentation["Presentation Layer (UI)"]
+        HS[HomeScreen<br/>Jetpack Compose]
+        DS[DetailsScreen<br/>Jetpack Compose]
+        VM1[NearByViewModel]
+        VM2[SearchViewModel]
+        VM3[FavoritesViewModel]
+        VM4[DetailsViewModel]
+        VM5[LocationViewModel]
+        VM6[LocationPermissionViewModel]
+
+        HS --> VM1
+        HS --> VM2
+        HS --> VM3
+        HS --> VM5
+        DS --> VM4
+    end
+
+    subgraph Domain["Domain Layer (Business Logic)"]
+        UC[GetRestaurantsUseCase]
+        M1[Restaurant Model]
+        M2[PlaceDetails Model]
+        RI[RestaurantsRepository<br/>Interface]
+
+        VM1 --> UC
+        VM2 --> UC
+        VM4 --> RI
+        UC --> RI
+    end
+
+    subgraph Data["Data Layer (Repositories)"]
+        RP[RestaurantsRepositoryImpl]
+        FR[FavoritesRepository]
+        LR[LocationRepository]
+
+        VM3 --> FR
+        VM5 --> LR
+        RI -. impl .-> RP
+    end
+
+    subgraph DataSources["Data Sources"]
+        GPC[GooglePlacesClient<br/>Ktor HTTP]
+        FDS[FavoritesDataSource<br/>DataStore]
+        FLP[FusedLocationProviderClient<br/>Location API]
+
+        RP --> GPC
+        FR --> FDS
+        LR --> FLP
+    end
+
+    subgraph External["External Services"]
+        API[Google Places API<br/>REST]
+        GPC --> API
+    end
+
+    style Presentation fill:#e3f2fd
+    style Domain fill:#fff9c4
+    style Data fill:#f3e5f5
+    style DataSources fill:#e8f5e9
+    style External fill:#ffebee
 ```
 
-**3. Data Layer**
-```mermaid
-graph TD
-    Repo[RestaurantsRepository Interface] -. impl .-> RepoImpl[RestaurantsRepositoryImpl]
-    RepoImpl --> GPC[GooglePlacesClient] --> Ktor[Ktor HTTP Client]
-
-    FavRepo[FavoritesRepository] --> FDS[FavoritesDataSource] --> DS_Prefs[DataStore Preferences]
-
-    LVM[LocationViewModel] --> LR[LocationRepository] --> FLP[FusedLocationProviderClient]
-```
+---
 
 ## Key Technologies & Libraries
 
