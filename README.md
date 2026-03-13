@@ -72,17 +72,26 @@ The project includes comprehensive test coverage focusing on meaningful tests ra
 
 ## Project Structure
 
+The project is organized into three Gradle modules following Clean Architecture:
+
 ```
-com.nes.lunchtime/
-├── app/
-│   └── LunchTimeApp.kt                        # Hilt Application class
-│
-├── domain/                                    # Pure Kotlin — no Android imports
-│   ├── Restaurant.kt                          # Domain models (Restaurant, PlaceDetails)
-│   ├── RestaurantsRepository.kt               # Repository interface (contract)
-│   └── GetRestaurantsUseCase.kt               # Business logic: fetch & sort by distance
-│
-├── data/                                      # All data sources & implementations
+:app          — Presentation layer + DI wiring (depends on :domain and :data)
+:domain       — Pure business logic, no Android framework imports (no dependencies)
+:data         — Data sources and repository implementations (depends on :domain)
+```
+
+### `:domain` module
+```
+domain/src/main/java/com/nes/lunchtime/domain/
+├── Restaurant.kt                              # Domain models (Restaurant, PlaceDetails)
+├── RestaurantsRepository.kt                   # Repository interface (contract)
+└── GetRestaurantsUseCase.kt                   # Business logic: fetch & sort by distance
+```
+
+### `:data` module
+```
+data/src/main/java/com/nes/lunchtime/
+├── data/
 │   ├── remote/
 │   │   ├── RestaurantsRepository.kt           # RestaurantsRepositoryImpl
 │   │   ├── GooglePlacesClient.kt              # Ktor HTTP client for Places API
@@ -96,52 +105,61 @@ com.nes.lunchtime/
 │       ├── LocationRepository.kt              # GPS state via FusedLocationProvider
 │       ├── LocationPermissionManager.kt       # Runtime permission helpers
 │       └── LocationUtils.kt                   # Distance calculation utilities
-│
-├── ui/                                        # Presentation layer (Compose + MVVM)
-│   ├── MainActivity.kt
-│   ├── base/
-│   │   └── BaseViewModel.kt                   # Shared executeWithLoading helper
-│   ├── components/                            # Reusable composables
-│   │   ├── BrandedAppHeader.kt
-│   │   ├── RestaurantCard.kt
-│   │   ├── RestaurantImage.kt
-│   │   ├── CircularIndicator.kt
-│   │   └── ViewSwitcherButton.kt
-│   ├── home/
-│   │   ├── HomeScreen.kt
-│   │   ├── nearby/NearByViewModel.kt          # SharedFlow + transformLatest pattern
-│   │   ├── search/SearchViewModel.kt          # 500ms debounce
-│   │   ├── favorites/FavoritesViewModel.kt
-│   │   ├── list/RestaurantListView.kt
-│   │   └── map/RestaurantMapView.kt
-│   ├── details/
-│   │   ├── DetailsScreen.kt
-│   │   └── DetailsViewModel.kt
-│   ├── location/
-│   │   ├── LocationPermissionDialog.kt
-│   │   ├── LocationPermissionViewModel.kt     # Activity-scoped, permission state machine
-│   │   └── LocationViewModel.kt               # HomeScreen-scoped, continuous GPS updates
-│   ├── navigation/
-│   │   └── Destinations.kt                    # Type-safe nav routes (Kotlin Serialization)
-│   └── theme/
-│       ├── Color.kt
-│       ├── Type.kt
-│       ├── Dimens.kt
-│       └── Theme.kt
-│
-└── di/                                        # Hilt modules
-    ├── AppModule.kt                           # Binds RestaurantsRepository interface → impl
-    ├── NetworkModule.kt                       # HttpClient (Ktor)
-    ├── LocationModule.kt                      # FusedLocationProviderClient
+└── di/
     ├── DataStoreModule.kt                     # DataStore preferences
-    └── ApiKeyModule.kt                        # API key from BuildConfig
+    └── LocationModule.kt                      # FusedLocationProviderClient
 ```
 
-**Layer dependency rules:**
-- `domain` has zero dependencies on `data` or `ui`
-- `data` depends on `domain` (implements its repository interfaces)
-- `ui` depends on `domain` (use cases, models) but never on `data` directly
-- `di` wires everything together at app startup
+### `:app` module
+```
+app/src/main/java/com/nes/lunchtime/
+├── app/
+│   └── LunchTimeApp.kt                        # Hilt Application class
+├── data/
+│   └── remote/
+│       └── RestaurantsRepository.kt           # Binds RestaurantsRepository interface → impl
+├── di/
+│   ├── AppModule.kt                           # App-level Hilt module
+│   ├── NetworkModule.kt                       # HttpClient (Ktor)
+│   └── ApiKeyModule.kt                        # API key from BuildConfig
+└── ui/                                        # Presentation layer (Compose + MVVM)
+    ├── MainActivity.kt
+    ├── base/
+    │   └── BaseViewModel.kt                   # Shared executeWithLoading helper
+    ├── components/                            # Reusable composables
+    │   ├── BrandedAppHeader.kt
+    │   ├── RestaurantCard.kt
+    │   ├── RestaurantImage.kt
+    │   ├── CircularIndicator.kt
+    │   └── ViewSwitcherButton.kt
+    ├── home/
+    │   ├── HomeScreen.kt
+    │   ├── nearby/NearByViewModel.kt          # SharedFlow + transformLatest pattern
+    │   ├── search/SearchViewModel.kt          # 500ms debounce
+    │   ├── favorites/FavoritesViewModel.kt
+    │   ├── list/RestaurantListView.kt
+    │   └── map/RestaurantMapView.kt
+    ├── details/
+    │   ├── DetailsScreen.kt
+    │   └── DetailsViewModel.kt
+    ├── location/
+    │   ├── LocationPermissionDialog.kt
+    │   ├── LocationPermissionViewModel.kt     # Activity-scoped, permission state machine
+    │   └── LocationViewModel.kt               # HomeScreen-scoped, continuous GPS updates
+    ├── navigation/
+    │   └── Destinations.kt                    # Type-safe nav routes (Kotlin Serialization)
+    └── theme/
+        ├── Color.kt
+        ├── Type.kt
+        ├── Dimens.kt
+        └── Theme.kt
+```
+
+**Module dependency rules:**
+- `:domain` has zero dependencies on `:data` or `:app`
+- `:data` depends on `:domain` (implements its repository interfaces)
+- `:app` depends on `:domain` (use cases, models) and `:data` (for Hilt wiring)
+- UI code in `:app` never imports `:data` classes directly — only domain types cross the boundary
 
 ## Architecture & Design Patterns
 
