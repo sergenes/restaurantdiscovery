@@ -5,3 +5,4 @@ local.properties
 /.claude/
 /data/build/
 /domain/build/
+/.kotlin/
