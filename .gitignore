@@ -3,3 +3,6 @@ local.properties
 /build/
 /docs/
 /.claude/
+/data/build/
+/domain/build/
+/.kotlin/

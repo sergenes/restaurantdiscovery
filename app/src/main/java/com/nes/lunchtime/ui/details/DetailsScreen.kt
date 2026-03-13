@@ -15,8 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
-import com.nes.lunchtime.data.remote.model.ReviewDetails
-import com.nes.lunchtime.data.remote.model.ReviewText
+import com.nes.lunchtime.domain.Review
 import com.nes.lunchtime.ui.components.IndeterminateCircularIndicator
 import com.nes.lunchtime.ui.home.ErrorView
 import com.nes.lunchtime.ui.theme.Dimens
@@ -153,7 +152,7 @@ private fun DetailsContent(details: PlaceDetails) {
 }
 
 @Composable
-private fun ReviewItem(review: ReviewDetails) {
+private fun ReviewItem(review: Review) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = Dimens.CardElevationSmall)
@@ -164,7 +163,7 @@ private fun ReviewItem(review: ReviewDetails) {
                 .padding(Dimens.SpacingMedium)
         ) {
             Text(
-                text = review.text.text,
+                text = review.text,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -237,8 +236,8 @@ private val samplePlaceDetails = PlaceDetails(
     rating = 4.5,
     userRatingCount = 120,
     reviews = listOf(
-        ReviewDetails(ReviewText("Best pizza in town!", "en")),
-        ReviewDetails(ReviewText("Great service and atmosphere.", "en")),
-        ReviewDetails(ReviewText("A bit pricey but worth it.", "en"))
+        Review("Best pizza in town!", "en"),
+        Review("Great service and atmosphere.", "en"),
+        Review("A bit pricey but worth it.", "en")
     )
 )

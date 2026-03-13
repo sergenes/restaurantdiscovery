@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Lunchtime"
 include(":app")
+include(":domain")
+include(":data")

@@ -1,7 +1,5 @@
 package com.nes.lunchtime.domain
 
-import com.nes.lunchtime.data.remote.model.ReviewDetails
-
 data class Restaurant(
     val id: String = "",
     val displayName: String,
@@ -14,6 +12,8 @@ data class Restaurant(
     val distanceInMeters: Float = 0.0f
 )
 
+data class Review(val text: String, val languageCode: String)
+
 data class PlaceDetails(
     val id: String,
     val displayName: String,
@@ -22,5 +22,5 @@ data class PlaceDetails(
     val longitude: Double,
     val rating: Double,
     val userRatingCount: Int,
-    val reviews: List<ReviewDetails>
+    val reviews: List<Review>
 )

@@ -3,6 +3,7 @@ package com.nes.lunchtime.data.remote
 import com.nes.lunchtime.data.location.LocationUtils
 import com.nes.lunchtime.domain.PlaceDetails
 import com.nes.lunchtime.domain.Restaurant
+import com.nes.lunchtime.domain.Review
 import com.nes.lunchtime.data.remote.model.Center
 import com.nes.lunchtime.data.remote.model.Circle
 import com.nes.lunchtime.data.remote.model.LocationRestriction
@@ -129,7 +130,7 @@ class GooglePlacesClient @Inject constructor(
             longitude = response.location.longitude,
             rating = response.rating ?: 0.0,
             userRatingCount = response.userRatingCount ?: 0,
-            reviews = response.reviews ?: emptyList()
+            reviews = response.reviews?.map { Review(it.text.text, it.text.languageCode) } ?: emptyList()
         )
     }
 
