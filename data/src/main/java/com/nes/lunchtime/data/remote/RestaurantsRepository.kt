@@ -6,6 +6,8 @@ import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.domain.RestaurantsRepository
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RestaurantsRepositoryImpl @Inject constructor(
@@ -38,7 +40,7 @@ class RestaurantsRepositoryImpl @Inject constructor(
 
     private suspend fun <T> safeApiCall(errorMessage: String, call: suspend () -> T): Result<T> {
         return try {
-            Result.success(call())
+            Result.success(withContext(Dispatchers.IO) { call() })
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
