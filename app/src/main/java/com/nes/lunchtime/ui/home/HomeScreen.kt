@@ -311,7 +311,9 @@ private fun SearchContent(
         Initial -> EmptySearchState()
         Loading -> IndeterminateCircularIndicator()
         is Success if state.restaurants.isEmpty() ->
-            EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
+            EmptyResultsState(
+                stringResource(R.string.no_restaurants_found_search)
+            )
         is Success -> restaurantContent(state.restaurants)
         is Error -> ErrorView(message = state.message, onRetry = onRetry)
     }
