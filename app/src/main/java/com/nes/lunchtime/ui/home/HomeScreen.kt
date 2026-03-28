@@ -56,6 +56,10 @@ import com.nes.lunchtime.ui.home.search.SearchViewModel
 import com.nes.lunchtime.ui.location.LocationViewModel
 import com.nes.lunchtime.ui.theme.LunchtimeTheme
 import com.nes.lunchtime.ui.theme.Dimens
+import com.nes.lunchtime.ui.home.search.SearchViewModel.UiState.Initial
+import com.nes.lunchtime.ui.home.search.SearchViewModel.UiState.Success
+import com.nes.lunchtime.ui.home.search.SearchViewModel.UiState.Error
+import com.nes.lunchtime.ui.home.search.SearchViewModel.UiState.Loading
 
 sealed class ViewType(
     val title: String,
@@ -304,12 +308,12 @@ private fun SearchContent(
     onRetry: () -> Unit
 ) {
     when (state) {
-        SearchViewModel.UiState.Initial -> EmptySearchState()
-        SearchViewModel.UiState.Loading -> IndeterminateCircularIndicator()
-        is SearchViewModel.UiState.Success if state.restaurants.isEmpty() ->
+        Initial -> EmptySearchState()
+        Loading -> IndeterminateCircularIndicator()
+        is Success if state.restaurants.isEmpty() ->
             EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
-        is SearchViewModel.UiState.Success -> restaurantContent(state.restaurants)
-        is SearchViewModel.UiState.Error -> ErrorView(message = state.message, onRetry = onRetry)
+        is Success -> restaurantContent(state.restaurants)
+        is Error -> ErrorView(message = state.message, onRetry = onRetry)
     }
 }
 
