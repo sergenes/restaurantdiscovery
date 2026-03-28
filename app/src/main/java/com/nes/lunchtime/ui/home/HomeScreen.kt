@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.nes.lunchtime.R
 import com.nes.lunchtime.domain.Restaurant
 import com.nes.lunchtime.ui.ErrorScreen
@@ -81,6 +81,7 @@ fun HomeScreen(
             message = state.message,
             onRetry = locationViewModel::refreshLocation
         )
+
         is LocationViewModel.LocationState.LocationAvailable -> {
             // SideEffect lives here — it only runs when the LocationAvailable state changes
             // (i.e., when location actually updates), not on inner HomeScreenContent recompositions.
@@ -189,39 +190,10 @@ private fun HomeScreenLayout(
                 onSearch = onSearch
             )
 
-            when {
-                query.text.isNotEmpty() -> {
-                    when (val state = searchState) {
-                        SearchViewModel.UiState.Initial -> EmptySearchState()
-                        SearchViewModel.UiState.Loading -> IndeterminateCircularIndicator()
-                        is SearchViewModel.UiState.Success -> {
-                            if (state.restaurants.isEmpty()) {
-                                EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
-                            } else {
-                                restaurantContent(state.restaurants)
-                            }
-                        }
-                        is SearchViewModel.UiState.Error -> {
-                            ErrorView(message = state.message, onRetry = onRetrySearch)
-                        }
-                    }
-                }
-                else -> {
-                    when (val state = nearbyState) {
-                        NearByViewModel.UiState.Loading,
-                        NearByViewModel.UiState.Refreshing -> IndeterminateCircularIndicator()
-                        is NearByViewModel.UiState.Success -> {
-                            if (state.restaurants.isEmpty()) {
-                                EmptyResultsState(stringResource(R.string.no_restaurants_found_nearby))
-                            } else {
-                                restaurantContent(state.restaurants)
-                            }
-                        }
-                        is NearByViewModel.UiState.Error -> {
-                            ErrorView(message = state.message, onRetry = onRetryNearby)
-                        }
-                    }
-                }
+            if (query.text.isNotEmpty()) {
+                SearchContent(searchState, restaurantContent, onRetrySearch)
+            } else {
+                NearbyContent(nearbyState, restaurantContent, onRetryNearby)
             }
         }
     }
@@ -233,9 +205,14 @@ private fun SearchBar(
     onQueryChange: (TextFieldValue) -> Unit,
     onSearch: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .background(colorScheme.surface)
-        .padding(bottom = Dimens.SpacingMedium, start = Dimens.SpacingSmall, end = Dimens.SpacingSmall)
+    Column(
+        modifier = Modifier
+            .background(colorScheme.surface)
+            .padding(
+                bottom = Dimens.SpacingMedium,
+                start = Dimens.SpacingSmall,
+                end = Dimens.SpacingSmall
+            )
     ) {
         TextField(
             value = query,
@@ -298,6 +275,7 @@ private fun RestaurantContent(
                     onFavoriteClicked = onFavoriteClicked
                 )
             }
+
             ViewType.MapView -> {
                 RestaurantMapView(
                     restaurants = restaurants,
@@ -316,6 +294,38 @@ private fun RestaurantContent(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = Dimens.SpacingMedium)
         )
+    }
+}
+
+@Composable
+private fun SearchContent(
+    state: SearchViewModel.UiState,
+    restaurantContent: @Composable (List<Restaurant>) -> Unit,
+    onRetry: () -> Unit
+) {
+    when (state) {
+        SearchViewModel.UiState.Initial -> EmptySearchState()
+        SearchViewModel.UiState.Loading -> IndeterminateCircularIndicator()
+        is SearchViewModel.UiState.Success if state.restaurants.isEmpty() ->
+            EmptyResultsState(stringResource(R.string.no_restaurants_found_search))
+        is SearchViewModel.UiState.Success -> restaurantContent(state.restaurants)
+        is SearchViewModel.UiState.Error -> ErrorView(message = state.message, onRetry = onRetry)
+    }
+}
+
+@Composable
+private fun NearbyContent(
+    state: NearByViewModel.UiState,
+    restaurantContent: @Composable (List<Restaurant>) -> Unit,
+    onRetry: () -> Unit
+) {
+    when (state) {
+        NearByViewModel.UiState.Loading,
+        NearByViewModel.UiState.Refreshing -> IndeterminateCircularIndicator()
+        is NearByViewModel.UiState.Success if state.restaurants.isEmpty() ->
+            EmptyResultsState(stringResource(R.string.no_restaurants_found_nearby))
+        is NearByViewModel.UiState.Success -> restaurantContent(state.restaurants)
+        is NearByViewModel.UiState.Error -> ErrorView(message = state.message, onRetry = onRetry)
     }
 }
 
@@ -358,7 +368,10 @@ fun ErrorView(
             modifier = Modifier.padding(top = Dimens.SpacingXLarge)
         ) {
             Text(
-                modifier = Modifier.padding(horizontal = Dimens.SpacingMedium, vertical = Dimens.SpacingSmall),
+                modifier = Modifier.padding(
+                    horizontal = Dimens.SpacingMedium,
+                    vertical = Dimens.SpacingSmall
+                ),
                 text = message,
                 color = colorScheme.onBackground
             )
